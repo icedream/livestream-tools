@@ -5,7 +5,7 @@ volumes:
     driver_opts:
       type: ${LIBRARY_VOLUME_TYPE}
       o: ${LIBRARY_VOLUME_OPTIONS}
-      device: ${LIBRAY_VOLUME_DEVICE}
+      device: ${LIBRARY_VOLUME_DEVICE}
 services:
   liquidsoap:
     image: icedream/liquidsoap
