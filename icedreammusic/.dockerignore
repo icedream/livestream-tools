@@ -1,0 +1,8 @@
+.env
+
+###
+
+# Blacklisting all files except Golang-relevant ones
+*
+!tuna/
+!tunaposter/
