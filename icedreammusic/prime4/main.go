@@ -238,19 +238,19 @@ func main() {
 			tunaData.Status = "playing"
 			tunaData.Artists = []string{currentMetadata.Artist}
 			tunaData.Title = currentMetadata.Title
-		}
-		// enrich metadata with metacollector
-		resp, err := metacollectorClient.GetTrack(metacollector.MetaCollectorRequest{
-			Artist: currentMetadata.Artist,
-			Title:  currentMetadata.Title,
-		})
-		if err == nil {
-			if resp.CoverURL != nil {
-				tunaData.CoverURL = metaCollectorAPIURL.ResolveReference(&url.URL{
-					Path: *resp.CoverURL,
-				}).String()
+			// enrich metadata with metacollector
+			resp, err := metacollectorClient.GetTrack(metacollector.MetaCollectorRequest{
+				Artist: currentMetadata.Artist,
+				Title:  currentMetadata.Title,
+			})
+			if err == nil {
+				if resp.CoverURL != nil {
+					tunaData.CoverURL = metaCollectorAPIURL.ResolveReference(&url.URL{
+						Path: *resp.CoverURL,
+					}).String()
+				}
+				tunaData.Label = resp.Publisher
 			}
-			tunaData.Label = resp.Publisher
 		}
 		if err := output.Post(tunaData); err != nil {
 			log.Printf("WARNING: Failed to send new metadata to tuna: %s", err.Error())
