@@ -75,11 +75,12 @@ func main() {
 		lastCoverCheckResult := false
 		lastCoverCheckTime := time.Now()
 
-		metacollectorClient := metacollector.NewMetaCollectorClient(&url.URL{
+		metaCollectorAPIURL := &url.URL{
 			Scheme: "http",
 			Host:   "192.168.188.69:8080", // TODO - make configurable
 			Path:   "/",
-		})
+		}
+		metacollectorClient := metacollector.NewMetaCollectorClient(metaCollectorAPIURL)
 
 		for metadata := range c {
 			// log.Printf("New metadata: %+v", metadata)
@@ -148,7 +149,9 @@ func main() {
 				if err == nil {
 					log.Println("Enriching metadata:", resp)
 					if resp.CoverURL != nil {
-						tunaMetadata.CoverURL = *resp.CoverURL
+						tunaMetadata.CoverURL = metaCollectorAPIURL.ResolveReference(&url.URL{
+							Path: *resp.CoverURL,
+						}).String()
 					}
 					tunaMetadata.Label = resp.Publisher
 				} else {
