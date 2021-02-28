@@ -179,9 +179,9 @@ func (m *manager) GetTrackByArtistAndTitle(artist, title string, withCoverFile b
 		db = db.Preload("CoverFile")
 	}
 	err = db.
-		Where("artist = @artist AND title = @title",
+		Where("artist = @artist AND title COLLATE UTF8_GENERAL_CI LIKE @title",
 			sql.Named("artist", artist),
-			sql.Named("title", title)).
+			sql.Named("title", title+"%")).
 		Find(result).Error
 	return
 }
