@@ -1,0 +1,6 @@
+*.toml
+*.yaml
+*.yml
+*.json
+*.db
+/metacollectord

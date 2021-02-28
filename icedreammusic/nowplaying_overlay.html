@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+      integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:ital,wght@0,400;0,700;1,500;1,700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,500;1,700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Oxanium:ital,wght@0,400;0,700;1,500;1,700&display=swap"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+      integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      /**
+       * @var HTMLElement overlay
+       */
+      let overlay;
+      let events = [];
+      /**
+       * @var HTMLElement ticker
+       */
+      let ticker;
+      // TODO - make processEvent react as instantly as possible to hideOverlay/showOverlay by resetting interval timer
+      function processEvent() {
+        let lastChangeHadEffect = false;
+        do {
+          const message = events.shift();
+          console.debug('message:', message);
+          if (!message) return;
+          switch (message.type) {
+            case 'show':
+              lastChangeHadEffect = showOverlay(message.metadata, true);
+              break;
+            case 'hide':
+              lastChangeHadEffect = hideOverlay(true);
+              break;
+          }
+        } while (!lastChangeHadEffect);
+      }
+      function hideOverlay(immediate = false) {
+        if (!immediate) {
+          events.push({ type: 'hide' });
+          return;
+        }
+        if (overlay.classList.contains('active')) {
+          overlay.classList.add('hidden');
+          overlay.classList.remove('active');
+          return true;
+        }
+        return false;
+      }
+      function millisecondsToTimestamp(ms) {
+        const milliseconds = ms % 1000;
+        const totalSeconds = Math.floor(ms / 1000);
+        const seconds = totalSeconds % 60;
+        const totalMinutes = Math.floor(totalSeconds / 60);
+        const minutes = totalMinutes % 60;
+        const totalHours = Math.floor(totalMinutes / 60);
+        const hours = totalHours;
+        return `${hours > 0 ? `${hours}:` : ''}${
+          hours > 0 ? minutes.toString().padStart(2, '0') : minutes
+        }:${seconds.toString().padStart(2, '0')}`;
+      }
+      function showOverlay(metadata = null, immediate = false) {
+        if (!immediate) {
+          events.push({ type: 'show', metadata });
+          return;
+        }
+        if (metadata) {
+          const {
+            id,
+            image,
+            cover = '',
+            artist = '',
+            extra = '',
+            heading = 'Now playing',
+            label = '',
+            title = '',
+            text = '',
+            duration = 0,
+            progress = 0,
+          } = metadata;
+          switchProgress(id);
+          overlay.querySelector('.nowplaying-heading').innerText = heading;
+          overlay.querySelector(
+            '.nowplaying-heading-layer'
+          ).innerText = heading;
+          overlay.querySelector('.nowplaying-title').innerText = title;
+          overlay.querySelector('.nowplaying-artist').innerText = artist;
+          overlay.querySelector('.nowplaying-extra').innerText = extra;
+          overlay.querySelector('.nowplaying-label').innerText = label;
+          overlay.querySelector('.nowplaying-text').innerHTML = text;
+          const coverWrapper = overlay.querySelector(
+            '.nowplaying-cover-wrapper'
+          );
+          let coverImg = coverWrapper.querySelector('img');
+          if (image) {
+            if (coverImg) {
+              coverImg.remove();
+            }
+            coverImg = image;
+            coverImg.classList.add('nowplaying-cover');
+            coverWrapper.appendChild(coverImg);
+            coverWrapper.classList.remove('hidden');
+          } else if (typeof cover === 'string' && cover.length > 0) {
+            const image = new Image();
+            image.src = cover;
+            // image.style.position = 'absolute';
+            // image.style.left = 0;
+            // image.style.top = -1;
+            // image.style.width = 1;
+            // image.style.height = 1;
+            // document.body.appendChild(image);
+            // image.offsetHeight; // force render image
+            // const completed = image.completed;
+            // console.log({ completed });
+            // document.body.removeChild(image);
+            // image.style.opacity = 1;
+            // image.style.position = null;
+            // image.style.left = null;
+            // image.style.top = null;
+            // image.style.width = null;
+            // image.style.height = null;
+            // if (!completed) {
+            const start = Date.now();
+            image.addEventListener('load', () => {
+              let immediate = false;
+              if (Date.now() - start < 500) {
+                immediate = true;
+              }
+              showOverlay(
+                {
+                  ...metadata,
+                  image,
+                },
+                immediate
+              ); // requeue to display
+            });
+            image.addEventListener('error', () => {
+              showOverlay(metadata); // requeue to try again
+            });
+            return;
+            // }
+            // showOverlay(
+            //   {
+            //     ...metadata,
+            //     image,
+            //   },
+            //   true
+            // );
+          } else {
+            if (coverImg) {
+              coverImg.remove();
+            }
+            coverWrapper.classList.add('hidden');
+          }
+        }
+        if (!overlay.classList.contains('active')) {
+          overlay.classList.remove('hidden');
+          overlay.offsetHeight; // flush
+          overlay.classList.add('active');
+          return true;
+        }
+        return false;
+      }
+      let progresses = {};
+      let currentProgressId = null;
+      let progressUpdateTimer = null;
+      function getAlignedTimestamp(ts = Date.now()) {
+        return Math.floor(ts / 1000) * 1000;
+      }
+      function switchProgress(id) {
+        if (id === currentProgressId) {
+          return;
+        }
+        console.log('switching progress to:', id);
+        if (currentProgressId !== null) {
+          delete progresses[currentProgressId];
+        }
+        if (progressUpdateTimer !== null) {
+          clearInterval(progressUpdateTimer);
+        }
+        currentProgressId = id;
+        const lastProgress = progresses[currentProgressId] || {};
+        resetProgressBar();
+        if (
+          typeof lastProgress.progress === 'number' &&
+          typeof lastProgress.duration === 'number'
+        ) {
+          updateProgressBar({
+            progress: lastProgress.progress,
+            duration: lastProgress.duration,
+          });
+        }
+        progressUpdateTimer = setInterval(function () {
+          const lastProgress = progresses[id] || {};
+          if (
+            typeof lastProgress.progress !== 'number' ||
+            typeof lastProgress.duration !== 'number'
+          ) {
+            return;
+          }
+          const newProgress = Date.now() - lastProgress.playbackStartedAt;
+          updateProgressBar({
+            duration: lastProgress.duration,
+            progress: newProgress,
+          });
+        }, 100);
+      }
+      function resetProgressBar() {
+        const progressWrapper = overlay.querySelector('.nowplaying-progress');
+        const progressInner = progressWrapper.querySelector(
+          '.nowplaying-progress-inner'
+        );
+        const newProgressInner = progressInner.cloneNode(true);
+        newProgressInner.style.width = '0%';
+        progressInner.parentElement.replaceChild(
+          newProgressInner,
+          progressInner
+        );
+      }
+      function showProgress({ id, duration, progress }) {
+        const lastProgress = progresses[id] || {};
+        if (typeof duration !== 'number' || duration <= 0) {
+          // cause progress bar to be hidden by setting zero values
+          lastProgress.duration = 0;
+          lastProgress.progress = 0;
+          lastProgress.playbackStartedAt = 0;
+        } else {
+          const { playbackStartedAt } = lastProgress;
+          lastProgress.playbackStartedAt = Date.now() - progress;
+          if (typeof playbackStartedAt === 'number') {
+            const supposedProgress = Date.now() - playbackStartedAt;
+            const progressDifference = Math.abs(progress - supposedProgress);
+            if (progressDifference < 2000) {
+              // prefer oldest timestamp to make the progress less jumpy
+              lastProgress.playbackStartedAt = Math.min(
+                playbackStartedAt || Infinity,
+                Date.now() - progress
+              );
+            }
+            console.log({
+              progress,
+              supposedProgress,
+              progressDifference,
+              oldPlaybackStartedAt: playbackStartedAt,
+              newPlaybackStartedAt: lastProgress.playbackStartedAt,
+            });
+          } else {
+            console.log('new progress');
+          }
+
+          lastProgress.duration = duration;
+          lastProgress.progress = Date.now() - lastProgress.playbackStartedAt;
+          // updateProgressBar({ duration, progress: lastProgress.progress });
+
+          // progressUpdateTimer = setInterval(function () {
+          //   const newProgress = Date.now() - lastProgress.playbackStartedAt;
+          //   updateProgressBar({ duration, progress: newProgress });
+          // }, 100);
+        }
+
+        progresses[id] = lastProgress;
+      }
+      function updateProgressBar({ duration, progress } = {}) {
+        const progressWrapper = overlay.querySelector('.nowplaying-progress');
+        if (duration > 0 && progress >= 0) {
+          progressWrapper.classList.remove('hidden');
+          const progressInner = progressWrapper.querySelector(
+            '.nowplaying-progress-inner'
+          );
+          progressInner.style.width = `${((100 * progress) / duration).toFixed(
+            3
+          )}%`;
+          progressWrapper
+            .querySelectorAll('.nowplaying-progress-text-total')
+            .forEach((e) => (e.innerText = millisecondsToTimestamp(duration)));
+          progressWrapper
+            .querySelectorAll('.nowplaying-progress-text-current')
+            .forEach((e) => (e.innerText = millisecondsToTimestamp(progress)));
+        } else {
+          progressWrapper.classList.add('hidden');
+        }
+      }
+      function getTrackIdentifier({ title, artist }) {
+        return `${JSON.stringify({
+          title,
+          artist,
+        })}`;
+      }
+      function tick() {
+        const currentlyActiveElement = ticker.querySelector('.active');
+        let nextElement;
+        if (!currentlyActiveElement) {
+          nextElement = ticker.firstElementChild;
+        } else {
+          nextElement =
+            currentlyActiveElement.nextElementSibling ||
+            ticker.firstElementChild;
+          currentlyActiveElement.classList.remove('active');
+          currentlyActiveElement.classList.add('hidden');
+        }
+        while (nextElement.nodeType === Node.TEXT_NODE /* text node */) {
+          nextElement =
+            nextElement.nextElementSibling || ticker.firstElementChild;
+        }
+        console.debug('next ticker elemnet:', nextElement);
+        nextElement.classList.remove('hidden');
+        nextElement.classList.add('active');
+      }
+      window.addEventListener('DOMContentLoaded', function () {
+        overlay = document.getElementById('left');
+        console.debug('message processing enabled');
+        setInterval(processEvent, 1000);
+
+        ticker = document.getElementById('ticker');
+        setInterval(tick, 5000);
+      });
+    </script>
+    <script>
+      /* Fetch data from Tuna API. */
+      let lastId = null;
+      setInterval(async function () {
+        const { data } = await axios.get('http://localhost:1608');
+        // console.info(data);
+        const almostEnding =
+          data.progress > 0 && data.duration > 0
+            ? data.progress > data.duration - 15000
+            : false;
+        if (data.status === 'stopped' || almostEnding) {
+          // stopped
+          hideOverlay();
+        } else {
+          // playing or paused
+          const artistString = data.artists
+            ? data.artists.reduce((previous, currentValue, currentIndex) => {
+                if (previous.length <= 0) {
+                  return currentValue;
+                }
+                if (currentIndex === data.artists.length - 1) {
+                  return `${previous} & ${currentValue}`;
+                }
+                return `${previous}, ${currentValue}`;
+              }, '')
+            : undefined;
+          const id = getTrackIdentifier({
+            title: data.title,
+            artist: artistString,
+          });
+          if (lastId !== null && id !== lastId) {
+            hideOverlay();
+          }
+          lastId = id;
+          showOverlay({
+            id,
+            title: data.title
+              ? data.title
+                  .replace(
+                    /\s+\((original|extended)(\s+(edit|mix|version))?\)/i,
+                    ''
+                  )
+                  .replace(
+                    /\((.+) (?:original|extended)(\s+(edit|remix|mix|version))?\)/i,
+                    '($1$2)'
+                  )
+              : '',
+            artist: artistString,
+            label: data.label
+              ? data.label
+                  .replace(/\bw?reck?(ord(ing)?)?s?\b/i, '')
+                  .replace(/\b(digital|audio|music)(\s+bundles?)?$/i, '')
+                  .replace(/\s+\([\s\da-z]+\)$/i, '')
+                  .replace(/\b(holland|italy)\b/i, '')
+                  .trim()
+              : null,
+            cover: data.cover_url,
+          });
+          showProgress({
+            id,
+            duration: data.duration,
+            progress: data.progress,
+          });
+        }
+      }, 2000);
+    </script>
+
+    <style>
+      /* @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,500;1,700&display=swap'); */
+      /* @import url('https://fonts.googleapis.com/css2?family=Orbitron:ital,wght@0,400;0,700;1,500;1,700&display=swap'); */
+      :root {
+        --background: #249;
+        --color: white;
+      }
+      html,
+      body {
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+        background: black;
+      }
+      .nowplaying-heading-row,
+      .logo {
+        font-family: 'Orbitron', sans-serif;
+      }
+      body {
+        font-family: 'Oxanium', sans-serif;
+        /* font-family: 'Bahnschrift', sans-serif; */
+        /* font-family: 'Montserrat', Arial, Helvetica, sans-serif; */
+        font-size: 24px;
+        color: white;
+        display: flex;
+        flex-direction: row;
+        padding: 2em;
+        box-sizing: border-box;
+      }
+      .left {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        margin-right: 1em;
+        flex-grow: 1;
+      }
+      .right {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        flex-grow: 0;
+        text-align: right;
+        font-size: 1.2em;
+      }
+      .nowplaying-flow {
+        display: flex;
+        flex-direction: column;
+      }
+      .nowplaying-top {
+        display: flex;
+        flex-direction: row;
+      }
+      .nowplaying-cover-wrapper {
+        flex-grow: 0;
+        flex-shrink: 1;
+      }
+      .nowplaying-cover-wrapper.hidden {
+        display: none;
+      }
+      .nowplaying-cover-wrapper img {
+        height: 4em;
+        width: 4em;
+      }
+      .nowplaying-flow {
+        transition: opacity linear 1s;
+      }
+      .nowplaying-heading,
+      .nowplaying-heading-layer,
+      .nowplaying-content-wrapper,
+      .nowplaying-cover-wrapper {
+        padding-top: 0.2em;
+        padding-bottom: 0.2em;
+      }
+      .nowplaying-cover-wrapper {
+        margin-right: 0.2em;
+      }
+      .nowplaying-heading,
+      .nowplaying-heading-layer,
+      .nowplaying-content-wrapper {
+        padding-left: 0.2em;
+        padding-right: 0.2em;
+      }
+      .nowplaying-heading-row {
+        text-transform: lowercase;
+        /* text-transform: uppercase; */
+        position: relative;
+        min-height: 1.66em;
+      }
+      .nowplaying-progress {
+        position: relative;
+        height: 1em;
+        min-height: 1em;
+        max-height: 1em;
+        color: white;
+        background: rgba(0, 0, 0, 0.5);
+        border: white 1px solid;
+      }
+      .nowplaying-progress.hidden {
+        display: none;
+      }
+      .nowplaying-progress-text {
+        font-size: 0.8em;
+        word-break: keep-all;
+        white-space: nowrap;
+        padding-left: calc(0.2em * (1 / 0.8));
+        padding-right: calc(0.2em * (1 / 0.8));
+      }
+      .nowplaying-progress-text-current {
+        font-weight: bold;
+      }
+      .nowplaying-progress-inner {
+        position: absolute;
+        overflow: hidden;
+        left: 0;
+        top: 0;
+        background: white;
+        color: var(--background);
+        height: 100%;
+        min-height: 100%;
+        transition: width linear 0.2s;
+      }
+      .nowplaying-heading-row,
+      .nowplaying-content-wrapper,
+      .nowplaying-progress {
+        margin-bottom: 0.33em;
+      }
+      .nowplaying-heading,
+      .nowplaying-heading-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        clip-path: inset(0 100% 0 0);
+      }
+      .nowplaying-heading {
+        background: var(--background);
+        color: var(--color);
+      }
+      .nowplaying-heading-layer {
+        background: var(--color);
+        color: var(--background);
+      }
+      .active .nowplaying-heading,
+      .hidden .nowplaying-heading,
+      .active .nowplaying-heading-layer,
+      .hidden .nowplaying-heading-layer {
+        clip-path: inset(0 0 0 0);
+      }
+
+      .nowplaying-heading-wrapper {
+        opacity: 1;
+        transition: opacity linear 1s;
+      }
+      .active .nowplaying-heading-wrapper {
+        transition-duration: 0.1s;
+      }
+      /* .hidden .nowplaying-heading-wrapper {
+        opacity: 0;
+      } */
+      .active .nowplaying-heading {
+        transition: clip-path ease-out 0.5s 0.5s;
+        /* animation: random forwards infinite 20s 0.5s; */
+      }
+      .active .nowplaying-heading-layer {
+        transition: clip-path ease-in 0.5s;
+      }
+
+      .hidden .nowplaying-heading,
+      .hidden .nowplaying-heading-layer {
+        clip-path: inset(0 0 0 100%);
+      }
+      .hidden .nowplaying-heading-layer {
+        transition: clip-path ease-out 0.5s 0.5s;
+      }
+      .hidden .nowplaying-heading {
+        transition: clip-path ease-in 0.5s;
+      }
+      .nowplaying-flow {
+        margin-bottom: 0.5em;
+        /* text-transform: uppercase; */
+      }
+      .nowplaying-flow,
+      .hidden .nowplaying-flow {
+        opacity: 0;
+      }
+      .active .nowplaying-flow {
+        opacity: 1;
+      }
+      .nowplaying-heading-wrapper {
+        background: white;
+      }
+      .nowplaying-artist {
+        font-weight: bold;
+      }
+      .nowplaying-label,
+      .nowplaying-extra {
+        font-style: italic;
+        font-size: 0.9em;
+      }
+      .nowplaying-label:not(:empty)::before {
+        display: inline;
+        content: '[';
+      }
+      .nowplaying-label:not(:empty)::after {
+        display: inline;
+        content: ']';
+      }
+
+      .logo {
+        font-weight: bold;
+      }
+      .episode {
+        font-size: 0.7em;
+      }
+
+      @keyframes random {
+        47.5% {
+          clip-path: inset(0 0 0 0);
+        }
+        50% {
+          clip-path: inset(0 0 0 100%);
+        }
+        50.1% {
+          transition-duration: 0;
+          clip-path: inset(0 100% 0 0);
+        }
+        52.5% {
+          transition-duration: 0.5s;
+          clip-path: inset(0 0 0 0);
+        }
+      }
+
+      .ticker {
+        position: relative;
+        min-height: 1.5em;
+        font-size: 0.7em;
+      }
+      .ticker > * {
+        position: absolute;
+        opacity: 0;
+        transition: opacity linear 0.5s;
+      }
+      .ticker .active {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="left" id="left">
+      <div class="nowplaying-heading-row">
+        <span class="nowplaying-heading-wrapper">
+          <span class="nowplaying-heading-layer">Now playing</span>
+          <span class="nowplaying-heading">Now playing</span>
+        </span>
+      </div>
+      <div class="nowplaying-flow">
+        <div class="nowplaying-top">
+          <div class="nowplaying-cover-wrapper"></div>
+          <div class="nowplaying-content-wrapper">
+            <div class="nowplaying-artist"></div>
+            <div class="nowplaying-title"></div>
+            <div class="nowplaying-extra"></div>
+            <div class="nowplaying-label"></div>
+            <div class="nowplaying-text"></div>
+          </div>
+        </div>
+        <div class="nowplaying-progress">
+          <div class="nowplaying-progress-text" style="width: 0%">
+            <span class="nowplaying-progress-text-current">0:00</span>
+            /
+            <span class="nowplaying-progress-text-total">0:00</span>
+          </div>
+          <div class="nowplaying-progress-inner" style="width: 0%">
+            <div class="nowplaying-progress-text" style="width: 0%">
+              <span class="nowplaying-progress-text-current">0:00</span>
+              /
+              <span class="nowplaying-progress-text-total">0:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="ticker" class="ticker">
+        <div>
+          <span class="fab fa-soundcloud">&nbsp;</span>
+          https://soundcloud.com/icedream
+        </div>
+        <div>
+          <span class="fab fa-twitter">&nbsp;</span>
+          https://twitter.com/icedream2k9
+        </div>
+        <div>
+          <span class="fab fa-facebook">&nbsp;</span>
+          https://facebook.com/icedreammusic
+        </div>
+        <div>
+          <span class="fab fa-twitch">&nbsp;</span>
+          https://twitch.tv/icedreammusic
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <div>
+          <div class="logo"></div>
+          <div class="episode"></div>
+        </div>
+        <div>
+          <img
+            src="file:///D:/Users/Icedream/Pictures/Icedream/artistlogo.png"
+            style="height: 3.7em"
+          />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
