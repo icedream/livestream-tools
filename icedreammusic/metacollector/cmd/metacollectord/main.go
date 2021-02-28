@@ -51,6 +51,7 @@ type track struct {
 	Publisher   string
 	CoverFile   *file `gorm:"ForeignKey:CoverFileID;"`
 	CoverFileID *uint
+	Path        string `gorm:"index:idx_path"`
 }
 
 type file struct {
@@ -117,7 +118,12 @@ func getPublisherFromTags(tags tag.Metadata) string {
 	return ""
 }
 
-func (m *manager) UpdateFileFromFilesystem(f *os.File) (err error) {
+func (m *manager) UpdateFileFromFilesystem(filePath string) (err error) {
+	f, err := os.Open(filePath)
+	if err == nil {
+		return
+	}
+
 	tags, err := tag.ReadFrom(f)
 	if err != nil {
 		return
@@ -133,6 +139,7 @@ func (m *manager) UpdateFileFromFilesystem(f *os.File) (err error) {
 
 	trackObj.Artist = tags.Artist()
 	trackObj.Title = tags.Title()
+	trackObj.Path = filePath
 
 	// Cover
 	if tags.Picture() != nil {
@@ -169,6 +176,19 @@ func (m *manager) WriteTrack(track *track) (err error) {
 	}
 
 	err = m.database.Save(track).Error
+	return
+}
+
+func (m *manager) GetTrackByPath(path string, withCoverFile bool) (result *track, err error) {
+	result = new(track)
+	db := m.database
+	if withCoverFile {
+		db = db.Preload("CoverFile")
+	}
+	err = db.
+		Where("path = @path",
+			sql.Named("path", path)).
+		Find(result).Error
 	return
 }
 
@@ -352,10 +372,7 @@ func main() {
 				// log.Println("event:", event)
 				if event.Op&fsnotify.Write == fsnotify.Write {
 					log.Println("modified file:", event.Name)
-					f, err := os.Open(event.Name)
-					if err == nil {
-						err = m.UpdateFileFromFilesystem(f)
-					}
+					err = m.UpdateFileFromFilesystem(event.Name)
 					if err != nil {
 						log.Printf("Failed to update tags from file system for %s: %s", event.Name, err)
 					}
@@ -406,11 +423,21 @@ func main() {
 
 			switch strings.ToLower(filepath.Ext(filePath)) {
 			case ".ogg", ".mp3", ".m4a", ".aac", ".flac", ".wav", ".wma", ".wv":
-				log.Println("scanning:", filePath)
-				f, err := os.Open(filePath)
+				// check if we already have an entry in the database that is up to date
+				entry, err := m.GetTrackByPath(filePath, false)
 				if err == nil {
-					err = m.UpdateFileFromFilesystem(f)
+					stat, err := d.Info()
+					if err == nil {
+						// entry.UpdatedAt same or newer than file mod time, skip
+						if entry.UpdatedAt.Sub(stat.ModTime()) >= 0 {
+							log.Println("skipping:", filePath)
+							return nil
+						}
+					}
 				}
+
+				log.Println("updating:", filePath)
+				err = m.UpdateFileFromFilesystem(filePath)
 				if err != nil {
 					log.Printf("Failed to update tags from file system for %s: %s", filePath, err)
 				}
