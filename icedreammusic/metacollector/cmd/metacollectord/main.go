@@ -120,7 +120,7 @@ func getPublisherFromTags(tags tag.Metadata) string {
 
 func (m *manager) UpdateFileFromFilesystem(filePath string) (err error) {
 	f, err := os.Open(filePath)
-	if err == nil {
+	if err != nil {
 		return
 	}
 
