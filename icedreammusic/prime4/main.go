@@ -223,11 +223,12 @@ func main() {
 	metadata := map[*stagelinq.Device]map[int]*DeviceMeta{}
 
 	output := tuna.NewTunaOutput()
-	metacollectorClient := metacollector.NewMetaCollectorClient(&url.URL{
+	metaCollectorAPIURL := &url.URL{
 		Scheme: "http",
 		Host:   "192.168.188.69:8080", // TODO - make configurable
 		Path:   "/",
-	})
+	}
+	metacollectorClient := metacollector.NewMetaCollectorClient(metaCollectorAPIURL)
 
 	sendMetadata := func() {
 		tunaData := &tuna.TunaData{
@@ -245,7 +246,9 @@ func main() {
 		})
 		if err == nil {
 			if resp.CoverURL != nil {
-				tunaData.CoverURL = *resp.CoverURL
+				tunaMetadata.CoverURL = metaCollectorAPIURL.ResolveReference(&url.URL{
+					Path: *resp.CoverURL,
+				}).String()
 			}
 			tunaData.Label = resp.Publisher
 		}
