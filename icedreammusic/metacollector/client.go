@@ -56,6 +56,7 @@ func (mcc *MetaCollectorClient) path(parts ...string) string {
 }
 
 func (mcc *MetaCollectorClient) GetTrack(req MetaCollectorRequest) (resp *MetaCollectorResponse, err error) {
+	resp = new(MetaCollectorResponse)
 	err = mcc.json("track/find", req, resp)
 	return
 }

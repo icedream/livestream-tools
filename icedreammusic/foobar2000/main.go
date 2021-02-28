@@ -139,15 +139,20 @@ func main() {
 
 			go func() {
 				// enrich metadata with metacollector
-				resp, err := metacollectorClient.GetTrack(metacollector.MetaCollectorRequest{
-					Artist: tunaMetadata.Artist,
+				req := metacollector.MetaCollectorRequest{
+					Artist: tunaMetadata.Artists[0],
 					Title:  tunaMetadata.Title,
-				})
+				}
+				log.Printf("Trying to enrich metadata: %+v", req)
+				resp, err := metacollectorClient.GetTrack(req)
 				if err == nil {
+					log.Println("Enriching metadata:", resp)
 					if resp.CoverURL != nil {
 						tunaMetadata.CoverURL = *resp.CoverURL
 					}
 					tunaMetadata.Label = resp.Publisher
+				} else {
+					log.Println("Failed to enrich metadata:", err)
 				}
 
 				err = tunaOutput.Post(tunaMetadata)
