@@ -246,7 +246,7 @@ func main() {
 		})
 		if err == nil {
 			if resp.CoverURL != nil {
-				tunaMetadata.CoverURL = metaCollectorAPIURL.ResolveReference(&url.URL{
+				tunaData.CoverURL = metaCollectorAPIURL.ResolveReference(&url.URL{
 					Path: *resp.CoverURL,
 				}).String()
 			}
