@@ -50,7 +50,7 @@ do
 
     if [ -z "$found_audio_source" ]
     then
-        offline=$(( found_audio_source + 1 ))
+        offline=$(( offline + 1 ))
     else
         offline=0
     fi
