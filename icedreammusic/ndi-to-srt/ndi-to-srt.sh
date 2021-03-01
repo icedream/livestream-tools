@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 target_url="${1:-srt://127.0.0.1:9000}"
 ffmpeg_pid=
