@@ -15,16 +15,38 @@ set("frame.video.height", 1080)
 %include "metadata_api.liq"
 %include "silent_fallback.liq"
 
-s = input.srt(id="input_srt_main", port=9000)
+s = input.srt(id="input_srt_main", max=3., port=9000)
+output.dummy(fallible=true, s)
 
 # Split audio off to be handled specially
 a = drop_video(s)
 a = mksafe_soft(a)
 a = setup_harbor_metadata_api(a)
+output.dummy(a)
 output.harbor(
     id="out_a_harbor",
     %ogg(%flac),
     # fallible=true,
     port=8050,
-    mount="/outa",
+    mount="/outa/flac",
+    a)
+output.harbor(
+    id="out_a_harbor",
+    %mp3(bitrate=320),
+    # fallible=true,
+    port=8050,
+    mount="/outa/mp3",
+    a)
+output.icecast(
+    id="out_a_rekt",
+    %mp3(bitrate=320),
+    # fallible=true,
+    mount="rekt",
+    port=60000,
+    #host="stream.rekt.network",
+    host="stream.rekt.fm",
+    user="icedream",
+    name=stream_name,
+    password="ghs[73uqGab8_q",
+    start=false,
     a)
