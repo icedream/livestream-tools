@@ -1,4 +1,4 @@
-ARG IMAGE=savonet/liquidsoap:v1.4.3
+ARG IMAGE=savonet/liquidsoap:v1.4.4
 # ARG IMAGE=savonet/liquidsoap:master
 
 # FROM $IMAGE
