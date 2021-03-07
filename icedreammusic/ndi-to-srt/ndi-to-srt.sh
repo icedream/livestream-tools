@@ -15,8 +15,8 @@ daemon_ffmpeg() {
 shutdown_ffmpeg() {
     if is_ffmpeg_running
     then
-        kill "$ffmpeg_pid"
-        wait "$ffmpeg_pid"
+        kill "$ffmpeg_pid" || true
+        wait "$ffmpeg_pid" || true
     fi
     ffmpeg_pid=
 }
@@ -60,11 +60,11 @@ do
         echo "starting ffmpeg with audio source: $found_audio_source" >&2
         # HACK - can't use the standard mpegts here, but liquidsoap will happily accept anything ffmpeg can parse (by default)… so let's just use nut here even though it feels super duper wrong
         daemon_ffmpeg -loglevel warning -extra_ips 192.168.188.21 -f libndi_newtek -i "$found_audio_source" -c copy -f nut -write_index false "${target_url}"
-    elif is_ffmpeg_running && [ -z "$found_audio_source" ] && [ "$offline" -gt 3 ]
+    elif is_ffmpeg_running && [ -z "$found_audio_source" ] && [ "$offline" -gt 0 ]
     then
         echo "shutting down ffmpeg since no source has been found" >&2
         shutdown_ffmpeg # it won't shut down by itself unfortunately
     fi
     
-    sleep 3
+    sleep 1
 done
