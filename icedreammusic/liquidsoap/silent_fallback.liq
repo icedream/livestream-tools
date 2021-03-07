@@ -3,7 +3,7 @@
 def mksafe_soft(s) =
     blank_s = blank()
     blank_v = drop_audio(blank_s)
-    silent_a = amplify(0.00005, noise())
+    silent_a = amplify(0.000075, noise())
     silent_s = mux_video(video=blank_v, silent_a)
     mksafe(fallback(track_sensitive=false, [s, silent_s]))
 end
