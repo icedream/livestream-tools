@@ -3,9 +3,9 @@ volumes:
   metadatabase:
   library:
     driver_opts:
-      type: ${LIBRARY_VOLUME_TYPE}
-      o: ${LIBRARY_VOLUME_OPTIONS}
-      device: ${LIBRARY_VOLUME_DEVICE}
+      type: "${LIBRARY_VOLUME_TYPE:-local}"
+      o: "${LIBRARY_VOLUME_OPTIONS:-defaults}"
+      device: "${LIBRARY_VOLUME_DEVICE:-/var/tmp/whatever}"
 services:
   liquidsoap:
     image: icedream/liquidsoap
@@ -46,11 +46,11 @@ services:
     # HACK - haven't quite figured out the ports SRT/NDI use
     network_mode: host
     command:
-      - /usr/local/bin/tunaposter
+      - '/usr/local/bin/tunaposter'
       # tuna source URL
-      - ${TUNA_SOURCE_URL}
+      - '${TUNA_SOURCE_URL:-http://localhost}'
       # liquidsoap metadata API URL
-      - http://127.0.0.1:21338
+      - 'http://127.0.0.1:21338'
     deploy:
       resources:
         limits:
