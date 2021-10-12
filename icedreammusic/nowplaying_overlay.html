@@ -36,6 +36,7 @@
        * @var HTMLElement ticker
        */
       let ticker;
+      let tickerTimer = null;
       // TODO - make processEvent react as instantly as possible to hideOverlay/showOverlay by resetting interval timer
       function processEvent() {
         let lastChangeHadEffect = false;
@@ -304,6 +305,28 @@
           artist,
         })}`;
       }
+      function hideTicker() {
+        console.log('hideTicker called');
+        const currentlyActiveElement = ticker.querySelector('.active');
+        if (currentlyActiveElement) {
+          currentlyActiveElement.classList.remove('active');
+          currentlyActiveElement.classList.add('hidden');
+        }
+
+        if (tickerTimer !== null) {
+          console.log('clearing interval for ticker timer');
+          clearInterval(tickerTimer);
+          tickerTimer = null;
+        }
+      }
+      function showTicker() {
+        console.log('showTicker called');
+        if (tickerTimer === null) {
+          console.log('setting interval for ticker timer');
+          tick();
+          tickerTimer = setInterval(tick, 8000);
+        }
+      }
       function tick() {
         const currentlyActiveElement = ticker.querySelector('.active');
         let nextElement;
@@ -330,7 +353,6 @@
         setInterval(processEvent, 1000);
 
         ticker = document.getElementById('ticker');
-        setInterval(tick, 5000);
       });
     </script>
     <script>
@@ -343,10 +365,20 @@
           data.progress > 0 && data.duration > 0
             ? data.progress > data.duration - 15000
             : false;
-        if (data.status === 'stopped' || almostEnding) {
-          // stopped
+        const isIntro =
+          data.title === 'Intro' &&
+          data.artists.includes('Imaginary Frequencies');
+        if (data.status === 'stopped' || almostEnding || isIntro) {
+          // stopped or intro
           hideOverlay();
+
+          // intro?
+          if (isIntro) {
+            hideTicker();
+          }
         } else {
+          showTicker();
+
           // playing or paused
           const artistString = data.artists
             ? data.artists.reduce((previous, currentValue, currentIndex) => {
