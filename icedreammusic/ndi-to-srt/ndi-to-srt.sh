@@ -16,7 +16,18 @@ shutdown_ffmpeg() {
     if is_ffmpeg_running
     then
         kill "$ffmpeg_pid" || true
-        wait "$ffmpeg_pid" || true
+        for t in $(seq 0 10)
+        do
+            if ! kill -0 "$ffmpeg_pid"
+            then
+                break
+            fi
+            sleep 1
+        done
+        if kill -0 "$ffmpeg_pid"
+        then
+            kill -9 "$ffmpeg_pid" || true
+        fi
     fi
     ffmpeg_pid=
 }
