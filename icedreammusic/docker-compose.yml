@@ -37,25 +37,6 @@ services:
         limits:
           cpus: "1"
           memory: 64M
-  tunaposter:
-    image: icedream/tunaposter
-    restart: always
-    build:
-      context: .
-      dockerfile: tunaposter.Dockerfile
-    # HACK - haven't quite figured out the ports SRT/NDI use
-    network_mode: host
-    command:
-      - '/usr/local/bin/tunaposter'
-      # tuna source URL
-      - '${TUNA_SOURCE_URL:-http://localhost}'
-      # liquidsoap metadata API URL
-      - 'http://127.0.0.1:21338'
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 32M
   metacollector:
     image: icedream/metacollector
     restart: always
