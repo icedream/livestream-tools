@@ -26,10 +26,10 @@ services:
         limits:
           cpus: "2"
           memory: 768M
-  ndi-to-srt:
-    image: icedream/ndi-to-srt
+  ndi-feeder:
+    image: icedream/ndi-feeder
     restart: always
-    build: ndi-to-srt
+    build: ndi-feeder
     # HACK - haven't quite figured out the ports SRT/NDI use
     network_mode: host
     deploy:

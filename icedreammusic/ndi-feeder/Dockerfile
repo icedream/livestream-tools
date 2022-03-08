@@ -10,10 +10,10 @@ RUN chmod -v +x *.sh
 
 FROM archlinux
 
-WORKDIR /usr/src/ndi-to-srt/
+WORKDIR /usr/src/ndi-feeder/
 RUN pacman --noconfirm -Sy git sudo make binutils fakeroot base-devel
 RUN echo "" && echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-RUN useradd -UMr -d /usr/src/ndi-to-srt/ -G wheel app
+RUN useradd -UMr -d /usr/src/ndi-feeder/ -G wheel app
 RUN chown -R app .
 
 USER app
@@ -24,6 +24,6 @@ RUN yay --noconfirm -S ndi-advanced-sdk && sudo rm -r ~/.cache /var/cache/pacman
 RUN yay --noconfirm -S ffmpeg-ndi && sudo rm -r ~/.cache /var/cache/pacman/*
 
 COPY --from=0 /target/ /
-CMD ["ndi-to-srt.sh"]
+CMD ["ndi-feeder.sh"]
 
 STOPSIGNAL SIGTERM
