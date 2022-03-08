@@ -20,7 +20,7 @@ COPY --from=0 /target/ /
 WORKDIR /library
 
 VOLUME ["/library"]
-RUN addgroup -S -g 950 app
-RUN adduser -S -k /dev/empty -g "App user" -h /library -u 950 -G app app
-USER 950
+#RUN addgroup -S -g 950 app
+#RUN adduser -S -k /dev/empty -g "App user" -h /library -u 950 -G app app
+#USER 950
 CMD ["metacollectord"]

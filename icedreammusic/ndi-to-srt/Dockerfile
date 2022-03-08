@@ -20,6 +20,7 @@ USER app
 RUN git clone --recursive https://aur.archlinux.org/yay.git yay/
 RUN cd yay && makepkg --noconfirm -si && cd .. && rm -r yay
 RUN yay --noconfirm -S pod2man && sudo rm -r ~/.cache /var/cache/pacman/*
+RUN yay --noconfirm -S ndi-advanced-sdk && sudo rm -r ~/.cache /var/cache/pacman/*
 RUN yay --noconfirm -S ffmpeg-ndi && sudo rm -r ~/.cache /var/cache/pacman/*
 
 COPY --from=0 /target/ /

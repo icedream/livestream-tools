@@ -55,3 +55,15 @@ services:
         limits:
           cpus: "2"
           memory: 128M
+  icecast:
+    image: icedream/icecast
+    build: images/icecast-2.4.4
+    restart: always
+    volumes:
+      - "/share/VM_Disks/Docker/IcedreamLive/config/icecast/icecast.xml:/icecast.xml:ro"
+    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 128M
