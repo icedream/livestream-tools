@@ -13,10 +13,21 @@ import (
 	"github.com/billziss-gh/cgofuse/fuse"
 	"github.com/dhowden/tag"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/alecthomas/kingpin.v3-unstable"
 
 	"github.com/icedream/livestream-tools/icedreammusic/metacollector"
 	"github.com/icedream/livestream-tools/icedreammusic/tuna"
 )
+
+var (
+	cli = kingpin.New("foobar2000", "Transmit foobar2000 now playing data to Tuna.")
+
+	argMetacollectorURL = cli.Arg("metacollector-url", "Metadata collector URL (service normally runs on port 8080)").Required().URL()
+)
+
+func init() {
+	kingpin.MustParse(cli.Parse(os.Args[1:]))
+}
 
 func main() {
 	c, fs := NewNowPlayingFilesystem()
@@ -75,12 +86,7 @@ func main() {
 		lastCoverCheckResult := false
 		lastCoverCheckTime := time.Now()
 
-		metaCollectorAPIURL := &url.URL{
-			Scheme: "http",
-			Host:   "bitsea:8080", // TODO - make configurable
-			Path:   "/",
-		}
-		metacollectorClient := metacollector.NewMetaCollectorClient(metaCollectorAPIURL)
+		metacollectorClient := metacollector.NewMetaCollectorClient(*argMetacollectorURL)
 
 		for metadata := range c {
 			// log.Printf("New metadata: %+v", metadata)
