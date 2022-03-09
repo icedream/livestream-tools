@@ -1,11 +1,5 @@
-#stream_name="The Escape Plan 003"
-#stream_name="Icedream's Secret Mix 08"
-#stream_name="TGIF mix"
-#stream_name="Icedream pres. Imaginary Frequencies 057"
-stream_name="Spontaneously live in the mix"
-#stream_name="Sunday Straight Shredding, I guess"
-#stream_name="Icedream's New Year's celebration stream"
-
-# codec = %ogg(%vorbis.abr(samplerate=44100, bitrate=500, min_bitrate=32, max_bitrate=512))
-# codec = %mp3(bitrate=320)
-# codec = %ogg(%opus(bitrate=192, complexity=10, max_bandwidth="full_band", application="audio", signal="music"))
+stream_name=getenv(default="Spontaneously live in the mix", "STREAM_NAME")
+internal_icecast_username=getenv(default="source", "INTERNAL_ICECAST_USERNAME")
+internal_icecast_password=getenv(default="source", "INTERNAL_ICECAST_PASSWORD")
+rektfm_username=getenv("REKTNETWORK_USERNAME")
+rektfm_password=getenv("REKTNETWORK_PASSWORD")

@@ -21,6 +21,11 @@ services:
     restart: always
     devices:
       - /dev/dri:/dev/dri
+    environment:
+      - INTERNAL_ICECAST_USERNAME=${INTERNAL_ICECAST_USERNAME:-source}
+      - INTERNAL_ICECAST_PASSWORD=${INTERNAL_ICECAST_PASSWORD:-source}
+      - REKTNETWORK_USERNAME
+      - REKTNETWORK_PASSWORD
     deploy:
       resources:
         limits:

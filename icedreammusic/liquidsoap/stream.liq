@@ -36,7 +36,9 @@ internal_icecast=output.icecast(
     fallible=true,
     port=61120,
     host="127.0.0.1",
-    name=stream_name())
+    user=internal_icecast_username,
+    password=internal_icecast_password,
+    name=stream_name)
 setup_harbor_stream_api(internal_icecast(
     id="out_a_int",
     %ffmpeg(format="ogg", %audio.copy),
@@ -44,16 +46,19 @@ setup_harbor_stream_api(internal_icecast(
     a_flac))
 
 # REKT.fm
-setup_harbor_stream_api(output.icecast(
-    id="out_a_rekt",
-    %ffmpeg(format="ogg", %audio.copy),
-    fallible=true,
-    mount="rekt",
-    port=60000,
-    #host="stream.rekt.network",
-    host="stream.rekt.fm",
-    user="icedream",
-    name=stream_name(),
-    password="***REMOVED***",
-    start=false,
-    a_flac))
+if string.length(rektfm_username) > 0 and string.length(rektfm_password) > 0 then
+    setup_harbor_stream_api(output.icecast(
+        id="out_a_rekt",
+        #%ogg(%flac),
+        %ffmpeg(format="ogg", %audio.copy),
+        fallible=true,
+        mount="rekt",
+        port=60001,
+        #host="stream.rekt.network",
+        host="stream.rekt.fm",
+        user=rektfm_username,
+        name=stream_name,
+        password=rektfm_password,
+        start=false,
+        a_flac))
+end
