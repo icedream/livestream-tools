@@ -9,9 +9,9 @@ RUN chmod -v +x *.sh
 FROM golang:1 AS fakesilence
 
 WORKDIR /usr/src/fakesilence
-COPY fakesilence/ .
-RUN go build -v .
-RUN cp fakesilence /usr/local/bin/
+ARG FAKESILENCE_VERSION=5d8d79af09df5c195908e004a4a3971942180901
+RUN go install -v -ldflags "-s -w" github.com/icedream/fakesilence@"${FAKESILENCE_VERSION}"
+RUN cp -v "$GOPATH"/bin/* /usr/local/bin
 
 ###
 
