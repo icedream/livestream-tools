@@ -53,7 +53,7 @@ if string.length(rektfm_username) > 0 and string.length(rektfm_password) > 0 the
         %ffmpeg(format="ogg", %audio.copy),
         fallible=true,
         mount="rekt",
-        port=60001,
+        port=60000,
         #host="stream.rekt.network",
         host="stream.rekt.fm",
         user=rektfm_username,
