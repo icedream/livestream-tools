@@ -1,7 +1,7 @@
 FROM busybox
 
 WORKDIR /target/usr/local/bin/
-COPY . .
+COPY *.sh .
 RUN chmod -v +x *.sh
 
 ###
