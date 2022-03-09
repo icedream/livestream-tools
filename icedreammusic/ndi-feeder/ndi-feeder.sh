@@ -65,7 +65,7 @@ while true; do
         call_ffmpeg -loglevel warning \
             -analyzeduration 1 -f libndi_newtek -extra_ips 192.168.188.21 -i "$found_audio_source" \
             -map a -c:a pcm_s16le -ar 48000 -ac 2 -f s16le - |
-            fakesilence --samplerate 48000 --channels 2 |
+            fakesilence --samplerate 48000 --channels 2 --silence-threshold 125ms |
             call_ffmpeg -loglevel warning \
                 -ar 48000 -channels 2 -f s16le -i - \
                 -map a -c:a flac -f ogg -content_type application/ogg "${target_url}" || true
