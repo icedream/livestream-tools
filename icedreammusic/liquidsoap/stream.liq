@@ -38,7 +38,8 @@ internal_icecast=output.icecast(
     host="127.0.0.1",
     user=internal_icecast_username,
     password=internal_icecast_password,
-    name=stream_name)
+    name=stream_name,
+    description=stream_description)
 setup_harbor_stream_api(internal_icecast(
     id="out_a_int",
     %ffmpeg(format="ogg", %audio.copy),
@@ -58,6 +59,7 @@ if string.length(rektfm_username) > 0 and string.length(rektfm_password) > 0 the
         host="stream.rekt.fm",
         user=rektfm_username,
         name=stream_name,
+        description=stream_description,
         password=rektfm_password,
         start=false,
         a_flac))
