@@ -34,19 +34,21 @@
     </paths>
 
     <logging>
-        <accesslog>null</accesslog>
-        <errorlog>null</errorlog>
-        <playlistlog>null</playlistlog>
+        <accesslog>stdout</accesslog>
+        <errorlog>stderr</errorlog>
+        <playlistlog>stdout</playlistlog>
       	<loglevel>3</loglevel> <!-- 4 Debug, 3 Info, 2 Warn, 1 Error -->
       	<logsize>10000</logsize>
         <logarchive>0</logarchive>
     </logging>
 
+<!--
     <security>
         <changeowner>
             <user>icecast</user>
             <group>icecast</group>
         </changeowner>
     </security>
+-->
 
 </icecast>

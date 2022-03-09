@@ -62,8 +62,7 @@ COPY --from=icecast /usr/local/ /usr/local/
 # install share files
 COPY --from=share /icecast/share/ /icecast/share/
 
-#USER 9999
-USER root
+USER 9999
 #VOLUME [ "/data" ]
 ENTRYPOINT [ "dumb-init" ]
 CMD [ "icecast", "-c", "/icecast.xml" ]
