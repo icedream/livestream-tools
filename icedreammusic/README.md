@@ -66,3 +66,8 @@ This needs to be running on the same machine that runs OBS or Tunadish.
 
 This component receives the main audio feed and metadata and merges it into the final Icecast output.
 
+### [Tunadish](tunadish/)
+
+Reimplements the API of the Tuna OBS plugin as a standalone application.
+
+This component is only used if OBS is not running on the computer that is the main audio source.
