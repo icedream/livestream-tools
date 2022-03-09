@@ -1,0 +1,3 @@
+[submodule "icedreammusic/ndi-feeder/fakesilence"]
+	path = icedreammusic/ndi-feeder/fakesilence
+	url = https://github.com/icedream/fakesilence.git
