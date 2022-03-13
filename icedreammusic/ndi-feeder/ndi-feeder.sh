@@ -66,9 +66,9 @@ while true; do
             -analyzeduration 1 -f libndi_newtek -extra_ips 192.168.188.21 -i "$found_audio_source" \
             -map a -c:a pcm_s16le -ar 48000 -ac 2 -f s16le - |
             fakesilence --samplerate 48000 --channels 2 --silence-threshold 125ms |
-            call_ffmpeg -loglevel warning \
+            daemon_ffmpeg -loglevel warning \
                 -ar 48000 -channels 2 -f s16le -i - \
-                -map a -c:a flac -f ogg -content_type application/ogg "${target_url}" || true
+                -map a -c:a flac -f ogg -content_type application/ogg "${target_url}"
 
         # HACK - can't use the standard mpegts here, but liquidsoap will happily accept anything ffmpeg can parse (by default)… so let's just use nut here even though it feels super duper wrong
     elif is_ffmpeg_running && [ -z "$found_audio_source" ] && [ "$offline" -gt 0 ]; then

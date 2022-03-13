@@ -26,6 +26,8 @@ services:
       - INTERNAL_ICECAST_PASSWORD=${INTERNAL_ICECAST_PASSWORD:-source}
       - REKTNETWORK_USERNAME
       - REKTNETWORK_PASSWORD
+      - STREAM_NAME
+      - STREAM_DESCRIPTION
     deploy:
       resources:
         limits:

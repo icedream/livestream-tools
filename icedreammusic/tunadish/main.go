@@ -1,44 +1,56 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-)
 
-type TunaData struct {
-	CoverURL string   `json:"cover_url"`
-	Title    string   `json:"title"`
-	Artists  []string `json:"artists"`
-	Label    string   `json:"label"`
-	Status   string   `json:"status"`
-	Progress uint64   `json:"progress"`
-	Duration uint64   `json:"duration"`
-}
+	"github.com/icedream/livestream-tools/icedreammusic/tuna"
+)
 
 const addr = "localhost:1608"
 
 func main() {
 	r := gin.Default()
 
-	currentData := &TunaData{
-		Status: "stopped",
+	r.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"GET", "POST"},
+		AllowHeaders:     []string{"Content-Length", "Content-Type", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
+		AllowCredentials: false,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	currentData := &tuna.TunaData{
+		Status: tuna.Stopped,
 	}
 
 	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, currentData)
+		c.JSON(http.StatusOK, *currentData)
 	})
 
 	r.POST("/", func(c *gin.Context) {
-		newData := new(TunaData)
+		newData := new(tuna.TunaRequest)
 
-		if err := c.Bind(newData); err != nil {
+		var err error
+
+		if err = c.BindJSON(newData); err == nil {
+			if newData == nil {
+				err = errors.New("invalid null request body")
+			}
+		}
+
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		currentData = newData
+		currentData = &newData.Data
 		c.JSON(http.StatusOK, gin.H{"success": true})
 	})
 

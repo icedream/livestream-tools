@@ -22,15 +22,15 @@ set("sandbox", "disabled")
 s = input.http(id="input_ice_main", max_buffer=4., "http://127.0.0.1:61120/main")
 
 # Split audio off to be handled specially
-a = drop_video(s)
-a = mksafe_soft(a)
+a = drop_video(id="main", s)
 a = setup_harbor_metadata_api(a)
+a = mksafe_soft(a)
 output.dummy(a)
 
-# encoded lossless stream
-a_flac = ffmpeg.encode.audio(
-	%ffmpeg(%audio(codec="flac")),
-	a)
+def append_encoder_meta(m) =
+    [("encoder", "Liquidsoap #{liquidsoap.version}")]
+end
+a = map_metadata(append_encoder_meta, a)
 
 internal_icecast=output.icecast(
     fallible=true,
@@ -41,26 +41,89 @@ internal_icecast=output.icecast(
     name=stream_name,
     description=stream_description)
 setup_harbor_stream_api(internal_icecast(
-    id="out_a_int",
-    %ffmpeg(format="ogg", %audio.copy),
+    id="out_a_int_vorbis",
+    # %ogg(%flac),
+    mount="/outa/vorbis",
+    start=false,
+    %ffmpeg(
+        format="ogg",
+        %audio(
+            codec="libvorbis",
+            flags=2, # CODEC_FLAG_QSCALE (enables VBR mode based on qscale aka global_quality)
+            global_quality=1180., # gets divided by FF_QP2LAMBDA=118
+        ),
+    ),
+    a,
+))
+setup_harbor_stream_api(internal_icecast(
+    id="out_a_int_flac",
     mount="/outa/flac",
-    a_flac))
+    start=true,
+    %ffmpeg(
+        format="ogg",
+        %audio(
+            codec="flac",
+        ),
+    ),
+    a,
+))
+setup_harbor_stream_api(internal_icecast(
+    id="out_a_int_mp3_96",
+    mount="/outa/mp3_96",
+    start=false,
+    format="audio/mpeg",
+    %ffmpeg(
+        format="mp3",
+        %audio(
+            codec="libmp3lame",
+            b=96000,
+            compression_level=0,
+        ),
+    ),
+    a,
+))
+setup_harbor_stream_api(internal_icecast(
+    id="out_a_int_mp3_128",
+    mount="/outa/mp3_128",
+    start=false,
+    format="audio/mpeg",
+    %ffmpeg(
+        format="mp3",
+        %audio(
+            codec="libmp3lame",
+            b=128000,
+            compression_level=0,
+        ),
+    ),
+    a,
+))
 
 # REKT.fm
 if string.length(rektfm_username) > 0 and string.length(rektfm_password) > 0 then
     setup_harbor_stream_api(output.icecast(
         id="out_a_rekt",
-        #%ogg(%flac),
-        %ffmpeg(format="ogg", %audio.copy),
+        # %ogg(%flac),
+        # %mp3(bitrate=320),
         fallible=true,
         mount="rekt",
         port=60000,
-        #host="stream.rekt.network",
-        host="stream.rekt.fm",
+        host="stream.rekt.network",
+        # host="stream.rekt.fm",
         user=rektfm_username,
         name=stream_name,
         description=stream_description,
         password=rektfm_password,
         start=false,
-        a_flac))
+        %ffmpeg(
+            format="ogg",
+            %audio(
+                codec="libvorbis",
+                flags=2, # CODEC_FLAG_QSCALE (enables VBR mode based on qscale aka global_quality)
+                global_quality=1180., # gets divided by FF_QP2LAMBDA=118
+            ),
+        ),
+        a,
+        # %ffmpeg(format="ogg", %audio.copy),
+        # a_vorbis,
+    ))
 end

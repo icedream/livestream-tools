@@ -1,2 +1,5 @@
 .env
 prod.env
+bin/
+include/
+*.zip

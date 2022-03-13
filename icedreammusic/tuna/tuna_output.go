@@ -4,9 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
+)
+
+type TunaPlaybackStatus string
+
+const (
+	Stopped TunaPlaybackStatus = "stopped"
+	Paused                     = "paused"
+	Playing                    = "playing"
 )
 
 type TunaOutput struct {
@@ -14,19 +21,61 @@ type TunaOutput struct {
 }
 
 type TunaData struct {
-	CoverURL string   `json:"cover_url"`
-	Title    string   `json:"title"`
-	Artists  []string `json:"artists"`
-	Label    string   `json:"label"`
-	Status   string   `json:"status"`
-	Progress uint64   `json:"progress"`
-	Duration uint64   `json:"duration"`
+	// CoverURL is a URL to the track's cover art.
+	CoverURL string `json:"cover_url,omitempty"`
+
+	// Title is the track's title.
+	Title string `json:"title,omitempty"`
+
+	// Artists lists the artists of the track.
+	Artists []string `json:"artists,omitempty"`
+
+	// Album is the track's album name.
+	Album string `json:"album,omitempty"`
+
+	// Explicit determines whether this track is marked as containing explicit lyrics.
+	Explicit bool `json:"explicit"`
+
+	// DiscNumber is the track's disc number.
+	DiscNumber int `json:"disc_number,omitempty"`
+
+	// TrackNumber is the track's number on the disc.
+	TrackNumber int `json:"track_number,omitempty"`
+
+	// Year is the year of this track's release.
+	Year int `json:"year,omitempty"`
+
+	// Month is the month of this track's release.
+	Month uint8 `json:"month,omitempty"`
+
+	// Day is the day of this track's release.
+	Day uint8 `json:"day,omitempty"`
+
+	// Label is the publisher/label of the track.
+	Label string `json:"label,omitempty"`
+
+	// Status is the current state of track playback.
+	Status TunaPlaybackStatus `json:"status"`
+
+	// Progress is how much of the track has been played back in milliseconds.
+	Progress uint64 `json:"progress"`
+
+	// Duration is the duration of the track in milliseconds.
+	Duration uint64 `json:"duration,omitempty"`
+
+	// TimeLeft is how much of the track is left to play in milliseconds.
+	TimeLeft float64 `json:"time_left,omitempty"`
 }
 
 func (d *TunaData) Equal(other *TunaData) bool {
 	result := fmt.Sprintf("%+v", d) == fmt.Sprintf("%+v", other)
-	log.Printf("%+v == %+v => %v", d, other, result)
 	return result
+}
+
+type TunaRequest struct {
+	Data     TunaData `json:"data"`
+	Hostname string   `json:"hostname,omitempty"`
+	Date     uint64   `json:"date"`
 }
 
 func NewTunaOutput() *TunaOutput {
@@ -39,13 +88,9 @@ func NewTunaOutput() *TunaOutput {
 
 func (output *TunaOutput) Post(data *TunaData) (err error) {
 	body := new(bytes.Buffer)
-	json.NewEncoder(body).Encode(&struct {
-		Data     *TunaData `json:"data"`
-		Hostname string    `json:"hostname,omitempty"`
-		Date     string    `json:"date"`
-	}{
-		Data: data,
-		Date: time.Now().Format(time.RFC3339),
+	json.NewEncoder(body).Encode(&TunaRequest{
+		Data: *data,
+		Date: uint64(time.Now().UnixMilli()),
 	})
 	_, err = output.client.Post("http://localhost:1608", "application/json", body)
 	return

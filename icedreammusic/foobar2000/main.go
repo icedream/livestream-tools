@@ -2,12 +2,14 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/billziss-gh/cgofuse/fuse"
@@ -23,6 +25,7 @@ var (
 	cli = kingpin.New("foobar2000", "Transmit foobar2000 now playing data to Tuna.")
 
 	argMetacollectorURL = cli.Arg("metacollector-url", "Metadata collector URL (service normally runs on port 8080)").Required().URL()
+	argDrive            = cli.Arg("mountpoint", "The mountpoint to attach to.").Default("Z:").String()
 )
 
 func init() {
@@ -79,6 +82,10 @@ func main() {
 	}
 	go http.Serve(listener, r)
 
+	httpClient := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
 	go func() {
 		tunaOutput := tuna.NewTunaOutput()
 
@@ -91,9 +98,9 @@ func main() {
 		for metadata := range c {
 			// log.Printf("New metadata: %+v", metadata)
 
-			status := "stopped"
+			status := tuna.Stopped
 			if metadata.IsPlaying {
-				status = "playing"
+				status = tuna.Playing
 			}
 
 			tunaMetadata := &tuna.TunaData{
@@ -106,41 +113,64 @@ func main() {
 			}
 
 			if metadata.IsPlaying {
-				hasChanged := lastCoverCheckPath != metadata.Path
-				fi, err := os.Stat(metadata.Path)
-				if err == nil {
-					if !hasChanged {
-						hasChanged = fi.ModTime().Sub(lastCoverCheckTime) > 0
+				// is this playing from Spotify?
+				if strings.HasPrefix(metadata.Path, "spotify:") {
+					// Spotify covers have to be fetched via their API
+					// TODO - use token for API instead of old oembed way, see https://stackoverflow.com/a/18294883
+					u := &url.URL{
+						Scheme: "https",
+						Host:   "open.spotify.com",
+						Path:   "/oembed",
 					}
-					lastCoverCheckTime = fi.ModTime()
-
-					if hasChanged {
-						lastCoverCheckResult = false
-						lastCoverCheckPath = metadata.Path
-						f, err := os.Open(metadata.Path)
-						if err == nil {
-							// get cover if possible
-							fileMetadata, err := tag.ReadFrom(f)
-							if err == nil {
-								if fileMetadata.Picture() != nil {
-									lastCoverCheckResult = true
-								}
-							} else {
-								log.Printf("Warning while reading tags for %s: %s", metadata.Path, err)
-							}
-							f.Close()
-						} else {
-							log.Printf("Warning while opening file %s: %s", metadata.Path, err)
+					q := u.Query()
+					q.Add("url", metadata.Path)
+					u.RawQuery = q.Encode()
+					if resp, err := httpClient.Get(u.String()); err == nil {
+						oembedData := &struct {
+							ThumbnailURL string `json:"thumbnail_url"`
+						}{}
+						if err = json.NewDecoder(resp.Body).Decode(oembedData); err == nil {
+							tunaMetadata.CoverURL = oembedData.ThumbnailURL
 						}
 					}
 				} else {
-					log.Printf("Warning while stat'ing file %s: %s", metadata.Path, err)
-				}
+					// Check normal/other files against metacollector
+					hasChanged := lastCoverCheckPath != metadata.Path
+					fi, err := os.Stat(metadata.Path)
+					if err == nil {
+						if !hasChanged {
+							hasChanged = fi.ModTime().Sub(lastCoverCheckTime) > 0
+						}
+						lastCoverCheckTime = fi.ModTime()
 
-				if lastCoverCheckResult {
-					tunaMetadata.CoverURL = apiAddr.ResolveReference(&url.URL{
-						Path: fmt.Sprintf("cover/%s", base64.URLEncoding.EncodeToString([]byte(metadata.Path))),
-					}).String()
+						if hasChanged {
+							lastCoverCheckResult = false
+							lastCoverCheckPath = metadata.Path
+							f, err := os.Open(metadata.Path)
+							if err == nil {
+								// get cover if possible
+								fileMetadata, err := tag.ReadFrom(f)
+								if err == nil {
+									if fileMetadata.Picture() != nil {
+										lastCoverCheckResult = true
+									}
+								} else {
+									log.Printf("Warning while reading tags for %s: %s", metadata.Path, err)
+								}
+								f.Close()
+							} else {
+								log.Printf("Warning while opening file %s: %s", metadata.Path, err)
+							}
+						}
+					} else {
+						log.Printf("Warning while stat'ing file %s: %s", metadata.Path, err)
+					}
+
+					if lastCoverCheckResult {
+						tunaMetadata.CoverURL = apiAddr.ResolveReference(&url.URL{
+							Path: fmt.Sprintf("cover/%s", base64.URLEncoding.EncodeToString([]byte(metadata.Path))),
+						}).String()
+					}
 				}
 			}
 
@@ -155,7 +185,7 @@ func main() {
 				if err == nil {
 					log.Println("Enriching metadata:", resp)
 					if resp.CoverURL != nil {
-						tunaMetadata.CoverURL = metaCollectorAPIURL.ResolveReference(&url.URL{
+						tunaMetadata.CoverURL = (*argMetacollectorURL).ResolveReference(&url.URL{
 							Path: *resp.CoverURL,
 						}).String()
 					}
@@ -174,6 +204,7 @@ func main() {
 		}
 	}()
 
-	host.Mount("", os.Args[1:])
-
+	host.Mount("", []string{
+		*argDrive,
+	})
 }

@@ -357,8 +357,14 @@
       /* Fetch data from Tuna API. */
       let lastId = null;
       setInterval(async function () {
-        const { data } = await axios.get('http://localhost:1608');
-        // console.info(data);
+        //const { data } = await axios.get('http://localhost:1608');
+        const { data: originalData } = await axios.get('http://icedream-bitwave:21338/main/meta');
+        const data = {
+          ...originalData,
+          artists: originalData.artist ? [originalData.artist] : [],
+          label: originalData.publisher,
+        };
+        console.info(data);
         const almostEnding =
           data.progress > 0 && data.duration > 0
             ? data.progress > data.duration - 15000

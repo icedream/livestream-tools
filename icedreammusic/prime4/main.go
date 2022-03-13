@@ -225,7 +225,7 @@ func main() {
 	output := tuna.NewTunaOutput()
 	metaCollectorAPIURL := &url.URL{
 		Scheme: "http",
-		Host:   "192.168.188.69:8080", // TODO - make configurable
+		Host:   "icedream-bitwave:8080", // TODO - make configurable
 		Path:   "/",
 	}
 	metacollectorClient := metacollector.NewMetaCollectorClient(metaCollectorAPIURL)

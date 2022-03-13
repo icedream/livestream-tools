@@ -4,5 +4,6 @@
 
 # Blacklisting all files except Golang-relevant ones
 *
+!foobar2000/
 !tuna/
 !tunaposter/
