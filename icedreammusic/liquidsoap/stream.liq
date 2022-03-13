@@ -22,15 +22,20 @@ set("sandbox", "disabled")
 s = input.http(id="input_ice_main", max_buffer=4., "http://127.0.0.1:61120/main")
 
 # Split audio off to be handled specially
-a = drop_video(id="main", s)
-a = setup_harbor_metadata_api(a)
+a = drop_video(s)
 a = mksafe_soft(a)
 output.dummy(a)
 
 def append_encoder_meta(m) =
-    [("encoder", "Liquidsoap #{liquidsoap.version}")]
+    [
+        ("encoder", "Liquidsoap #{liquidsoap.version}"),
+        ("stream_name", stream_name),
+        ("stream_description", stream_description),
+    ]
 end
-a = map_metadata(append_encoder_meta, a)
+a = map_metadata(id="main", append_encoder_meta, a)
+
+a = setup_harbor_metadata_api(a)
 
 internal_icecast=output.icecast(
     fallible=true,
