@@ -93,6 +93,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
         oldm = if list.assoc.mem("apic", oldm) then list.assoc.remove("apic", oldm) else oldm end
         oldm = if list.assoc.mem("metadata_block_picture", oldm) then list.assoc.remove("metadata_block_picture", oldm) else oldm end
         oldm = if list.assoc.mem("coverart", oldm) then list.assoc.remove("coverart", oldm) else oldm end
+        oldm = if list.assoc.mem("cover_url", oldm) then list.assoc.remove("cover_url", oldm) else oldm end
         m = list.append(oldm ?? [], m)
 
         # set metadata on stream
