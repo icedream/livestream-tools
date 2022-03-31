@@ -74,6 +74,8 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
         # TODO - we remove cover art for now as it disturbs REKT, this needs fixing
         # m = metadata.cover.remove(m)
 
+        new_track = if list.assoc.mem("new_track", m) then bool_of_string(string_of(list.assoc("new_track"))) else true end
+
         # merge old metadata except for the ones we expect to change
         oldm = s.last_metadata() ?? []
         oldm = if list.assoc.mem("artist", oldm) then list.assoc.remove("artist", oldm) else oldm end
@@ -94,7 +96,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
         m = list.append(oldm ?? [], m)
 
         # set metadata on stream
-        s.insert_metadata(m)
+        s.insert_metadata(new_track=new_track, m)
 
         http.response(protocol=protocol, code=200, headers=[
             ("allow","POST"),
