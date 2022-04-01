@@ -51,7 +51,7 @@ while true; do
             found_audio_source="${found_source[0]}"
             ;;
         esac
-    done < <(call_ffmpeg -loglevel info -extra_ips 192.168.188.21 -find_sources true -f libndi_newtek -i "dummy" 2>&1 | grep -Po "'(.+)'\s+'(.+)" | tee)
+    done < <(call_ffmpeg -loglevel info -extra_ips 192.168.188.21,192.168.188.76 -find_sources true -f libndi_newtek -i "dummy" 2>&1 | grep -Po "'(.+)'\s+'(.+)" | tee)
 
     if [ -z "$found_audio_source" ]; then
         offline=$((offline + 1))
