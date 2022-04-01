@@ -47,7 +47,7 @@ while true; do
         found_source[0]=$(sed -e 's/\\\([`~!@#$%^&*():;<>.,?/\|{}=+-]\)/\1/g' <<<"${found_source[0]}")
         found_source[1]=$(sed -e 's/\\\([`~!@#$%^&*():;<>.,?/\|{}=+-]\)/\1/g' <<<"${found_source[1]}")
         case "${found_source[0]}" in
-        *\(IDHPC\ Main\ Audio\))
+        *\(ID*\ Main\ Audio\))
             found_audio_source="${found_source[0]}"
             ;;
         esac
