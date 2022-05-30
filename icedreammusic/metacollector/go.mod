@@ -3,7 +3,7 @@ module github.com/icedream/livestream-tools/icedreammusic/metacollector
 go 1.16
 
 require (
-	github.com/dhowden/tag v0.0.0-20201120070457-d52dcb253c63
+	github.com/dhowden/tag v0.0.0-20220530110423-77907a30b7f1
 	github.com/fsnotify/fsnotify v1.5.4
 	github.com/gin-gonic/gin v1.7.7
 	github.com/spf13/viper v1.12.0
