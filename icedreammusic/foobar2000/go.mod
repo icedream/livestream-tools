@@ -10,7 +10,7 @@ replace (
 require (
 	github.com/billziss-gh/cgofuse v1.5.0
 	github.com/dhowden/tag v0.0.0-20220530110423-77907a30b7f1
-	github.com/gin-gonic/gin v1.7.7
+	github.com/gin-gonic/gin v1.8.0
 	github.com/icedream/livestream-tools/icedreammusic/metacollector v0.0.0-00010101000000-000000000000
 	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-00010101000000-000000000000
 	github.com/karalabe/xgo v0.0.0-20191115072854-c5ccff8648a7 // indirect
