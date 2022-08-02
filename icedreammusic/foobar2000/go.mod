@@ -1,6 +1,6 @@
 module github.com/icedream/livestream-tools/icedreammusic/foobar2000
 
-go 1.18
+go 1.19
 
 replace (
 	github.com/icedream/livestream-tools/icedreammusic/metacollector => ../metacollector
