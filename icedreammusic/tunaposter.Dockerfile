@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine
+FROM golang:1.19-alpine
 
 WORKDIR /usr/src/icedreammusic/
 COPY . .
@@ -9,7 +9,7 @@ RUN install -v -m0755 tunaposter/tunaposter /target/usr/local/bin/tunaposter
 
 ###
 
-FROM alpine:3.15
+FROM alpine:3.16
 
 COPY --from=0 /target/ /
 

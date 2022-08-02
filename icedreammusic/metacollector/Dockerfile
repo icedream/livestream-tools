@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine
+FROM golang:1.19-alpine
 
 WORKDIR /usr/src/icedreammusic/
 COPY . .
@@ -11,7 +11,7 @@ RUN install -v -m0755 metacollectord /target/usr/local/bin/metacollectord
 
 ###
 
-FROM alpine:3.15
+FROM alpine:3.16
 
 RUN apk add sqlite-libs
 
