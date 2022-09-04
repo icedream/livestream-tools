@@ -6,7 +6,9 @@
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
-    },
+    }
+  ],
+  "regexManagers": [
     {
       "fileMatch": [
         ".*[Dd]ocker.*"
