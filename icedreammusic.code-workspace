@@ -1,0 +1,34 @@
+{
+	"folders": [
+		{
+			"path": "icedreammusic"
+		},
+		{
+			"path": "icedreammusic/foobar2000"
+		},
+		{
+			"path": "icedreammusic/icecast"
+		},
+		{
+			"path": "icedreammusic/liquidsoap"
+		},
+		{
+			"path": "icedreammusic/metacollector"
+		},
+		{
+			"path": "icedreammusic/ndi-feeder"
+		},
+		{
+			"path": "icedreammusic/prime4"
+		},
+		{
+			"path": "icedreammusic/tuna"
+		},
+		{
+			"path": "icedreammusic/tunadish"
+		},
+		{
+			"path": "icedreammusic/tunaposter"
+		}
+	]
+}
