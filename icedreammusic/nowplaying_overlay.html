@@ -447,7 +447,7 @@
                   .replace(/\b(holland|italy)\b/i, '')
                   .trim()
               : null,
-            cover: data.cover_url,
+            cover: data.cover_url + "?nprandid=" + btoa(id),
           });
           showProgress({
             id,
