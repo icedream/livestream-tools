@@ -2,7 +2,7 @@
 # Our Denon StagelinQ receiver will send the metadata to this interface.
 # For fun, I tested this code with the port set to 1608 to emulate the OBS Tuna plugin's HTTP interface, and that works well!
 
-#metadata_api_port = 1608 # Emulate Tuna API
+metadata_api_hostname = getenv(default="icedream-bitwave", "METADATA_API_HOSTNAME")
 
 def http_export_meta(~compact=false, ~json5=false, m) =
     j = json()
@@ -23,7 +23,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
         has_cover_url = list.assoc.mem("cover_url", m)
         if has_cover and not has_cover_url then
             m = list.append(m, [
-                ("cover_url", "http://icedream-bitwave:#{metadata_api_port}/#{url.encode(id)}/cover")
+                ("cover_url", "http://#{metadata_api_hostname}:#{metadata_api_port}/#{url.encode(id)}/cover")
             ])
         end
 
