@@ -1,5 +1,5 @@
 # ARG IMAGE=savonet/liquidsoap:master
-ARG IMAGE=savonet/liquidsoap-ci-build:v2.0.5-preview_alpine_amd64
+ARG IMAGE=savonet/liquidsoap-ci-build:v2.1.1_alpine_amd64
 
 # FROM $IMAGE
 
