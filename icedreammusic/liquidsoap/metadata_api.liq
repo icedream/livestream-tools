@@ -40,6 +40,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
             ("access-control-allow-methods","GET,POST"),
             ("access-control-allow-headers","Origin,X-Requested-With,Content-Type,Accept,Authorization,access-control-allow-headers,access-control-allow-origin"),
             ("content-type","application/json"),
+            ("cache-control", "no-store"),
         ], data=data)
     end
 
@@ -53,6 +54,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
                 ("access-control-allow-credentials","true"),
                 ("access-control-allow-methods","GET,POST"),
                 ("access-control-allow-headers","Origin,X-Requested-With,Content-Type,Accept,Authorization,access-control-allow-headers,access-control-allow-origin"),
+                ("cache-control", "no-store"),
                 ("content-type", cover.mime),
                 ("content-length", string_of(string.length(cover))),
             ], data=string_of(cover))
@@ -62,6 +64,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
                 ("access-control-allow-credentials","true"),
                 ("access-control-allow-methods","GET,POST"),
                 ("access-control-allow-headers","Origin,X-Requested-With,Content-Type,Accept,Authorization,access-control-allow-headers,access-control-allow-origin"),
+                ("cache-control", "no-store"),
             ], data="")
         end
     end
