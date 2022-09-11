@@ -74,7 +74,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
         # TODO - we remove cover art for now as it disturbs REKT, this needs fixing
         # m = metadata.cover.remove(m)
 
-        new_track = if list.assoc.mem("new_track", m) then bool_of_string(string_of(list.assoc("new_track"))) else false end
+        new_track = if list.assoc.mem("new_track", m) then bool_of_string(string_of(list.assoc("new_track", m))) else false end
 
         # merge old metadata except for the ones we expect to change
         oldm = s.last_metadata() ?? []
