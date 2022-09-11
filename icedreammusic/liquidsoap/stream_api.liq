@@ -2,7 +2,19 @@ stream_api_port=21336
 
 interactive.harbor(port=stream_api_port, uri="/interactive") # expose through stream API port
 
+# list of stream IDs that have been set up by setup_harbor_stream_api
 stream_api_streams=[]
+
+def setup_harbor_stream_api_general()
+    def on_list(~protocol, ~data, ~headers, uri) =
+        data = stream_api_streams
+        http.response(protocol=protocol, code=200, headers=[
+            ("content-type","application/json"),
+        ], data=json.stringify(data))
+    end
+
+    harbor.http.register(port=stream_api_port, method="GET", "/streams/", on_list)
+end
 
 def setup_harbor_stream_api(s) =
     def on_start(~protocol, ~data, ~headers, uri) =
@@ -33,21 +45,13 @@ def setup_harbor_stream_api(s) =
         ], data=json.stringify(data))
     end
 
-    def on_list(~protocol, ~data, ~headers, uri) =
-        data = [
-            ("ids", stream_api_streams)
-        ]
-        http.response(protocol=protocol, code=200, headers=[
-            ("content-type","application/json"),
-        ], data=json.stringify(data))
-    end
-
-    stream_api_streams = list.add(s.id(), stream_api_streams)
+    s.id()::stream_api_streams
 
     harbor.http.register(port=stream_api_port, method="POST", "/streams/#{s.id()}/start", on_start)
     harbor.http.register(port=stream_api_port, method="POST", "/streams/#{s.id()}/stop", on_stop)
     harbor.http.register(port=stream_api_port, method="GET", "/streams/#{s.id()}", on_info)
-    harbor.http.register(port=stream_api_port, method="GET", "/streams/", on_list)
 
     s
 end
+
+setup_harbor_stream_api_general()
