@@ -368,19 +368,24 @@
 
         // set stream name and episode number in overlay
         const streamName = data.stream_name;
-        const rxEpisode = /(?:\s*episode\s+|\s+|\#)(\d+)(?:\s+\(.+\))/i;
-        const episodeNumberMatch = streamName.match(rxEpisode);
-        let title = streamName;
-        let subtitle = "";
-        if (episodeNumberMatch && episodeNumberMatch.length > 1) {
-          //episodeNumber = episodeNumberMatch[1].toString();
-          subtitle = episodeNumberMatch[0].trim();
-          title = streamName.replace(rxEpisode, '');
-          title = title.replace(' – ', "\n");
-          title = title.replace(' - ', "\n");
+        if (streamName) {
+          const rxEpisode = /(?:\s*episode\s+|\s+|\#)(\d+)(?:\s+\(.+\))/i;
+          const episodeNumberMatch = streamName.match(rxEpisode);
+          let title = streamName;
+          let subtitle = '';
+          if (episodeNumberMatch && episodeNumberMatch.length > 1) {
+            //episodeNumber = episodeNumberMatch[1].toString();
+            subtitle = episodeNumberMatch[0].trim();
+            title = streamName.replace(rxEpisode, '');
+            title = title.replace(' – ', "\n");
+            title = title.replace(' - ', "\n");
+          }
+          document.querySelector('.logo').innerText = title;
+          document.querySelector('.episode').innerText = subtitle;
+        } else {
+          document.querySelector('.logo').innerText = '';
+          document.querySelector('.episode').innerText = '';
         }
-        document.querySelector('.logo').innerText = title;
-        document.querySelector('.episode').innerText = subtitle;
 
         const almostEnding =
           data.progress > 0 && data.duration > 0
