@@ -21,10 +21,13 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
         # remove cover info and link to it instead if existing
         has_cover = list.assoc.mem("metadata_block_picture", m) or list.assoc.mem("coverart", m)
         has_cover_url = list.assoc.mem("cover_url", m)
-        if has_cover and not has_cover_url then
-            m = list.append(m, [
-                ("cover_url", "http://#{metadata_api_hostname}:#{metadata_api_port}/#{url.encode(id)}/cover")
-            ])
+        m = if has_cover and not has_cover_url then
+            list.add(
+                ("cover_url", "http://#{metadata_api_hostname}:#{metadata_api_port}/#{url.encode(id)}/cover"),
+                m
+            )
+        else
+            m
         end
 
         # data = metadata.json.stringify(compact=true, m)
