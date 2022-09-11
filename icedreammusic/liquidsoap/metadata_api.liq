@@ -12,6 +12,7 @@ end
 
 def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
     id = s.id()
+    s = drop_metadata(s) # stream metadata wipes out own data
     s = insert_metadata(s)
 
     # Handler for fetching metadata
