@@ -4,7 +4,7 @@
 
 metadata_api_hostname = getenv(default="icedream-bitwave", "METADATA_API_HOSTNAME")
 
-def http_export_meta(~compact=false, ~json5=false, m) =
+def http_export_meta(%argsof(json.stringify), m) =
     j = json()
     list.iter((fun (v) -> j.add(fst(v), (snd(v):string))), m)
     json.stringify(%argsof(json.stringify), j)
