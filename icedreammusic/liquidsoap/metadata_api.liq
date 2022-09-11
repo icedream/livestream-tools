@@ -65,9 +65,11 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
 
     # Handler for receiving metadata
     def on_http_metadata(~protocol, ~data, ~headers, uri) =
-        let json.parse data = data
+        let json.parse (data : {
+            data: [(string * string)] as json.object
+        }) = data
 
-        m = list.assoc(default=[], "data", data)
+        m = data.data
 
         # TODO - we remove cover art for now as it disturbs REKT, this needs fixing
         # m = metadata.cover.remove(m)
