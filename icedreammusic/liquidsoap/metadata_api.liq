@@ -65,9 +65,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
 
     # Handler for receiving metadata
     def on_http_metadata(~protocol, ~data, ~headers, uri) =
-        data = json.parse(default=[
-            ("data",[("key","value")])
-        ], data)
+        let json.parse data = data
 
         m = list.assoc(default=[], "data", data)
 
