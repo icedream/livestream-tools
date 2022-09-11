@@ -37,14 +37,31 @@ a = map_metadata(id="main", append_encoder_meta, a)
 
 a = setup_harbor_metadata_api(a)
 
-internal_icecast=output.icecast(
-    fallible=true,
-    port=61120,
-    host="127.0.0.1",
-    user=internal_icecast_username,
-    password=internal_icecast_password,
-    name=stream_name,
-    description=stream_description)
+# Output to internal Icecast server.
+# @argsof output.icecast[!fallible,!port,!host,!user,!password,!name,!description]
+# @param e Encoding format
+# @param s The source to output
+def internal_icecast(
+    # NOTE - We have to have !headers here, otherwise liquidsoap will complain "this value has type _ * _ but it should be a supertype of the type of the value at…"
+    %argsof(
+        output.icecast[!fallible,!headers,!port,!host,!user,!password,!name,!description]
+    ),
+    e, s) =
+    output.icecast(
+        %argsof(
+            output.icecast[!fallible,!headers,!port,!host,!user,!password,!name,!description]
+        ),
+        fallible=true,
+        headers=[],
+        port=61120,
+        host="127.0.0.1",
+        user=internal_icecast_username,
+        password=internal_icecast_password,
+        name=stream_name,
+        description=stream_description,
+        e, s)
+end
+
 setup_harbor_stream_api(internal_icecast(
     id="out_a_int_vorbis",
     # %ogg(%flac),
