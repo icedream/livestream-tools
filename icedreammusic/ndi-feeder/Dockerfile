@@ -2,6 +2,7 @@ FROM busybox
 
 WORKDIR /target/usr/local/bin/
 COPY *.sh .
+RUN dos2unix *.sh
 RUN chmod -v +x *.sh
 
 ###
