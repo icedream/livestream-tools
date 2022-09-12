@@ -201,7 +201,7 @@ func (m *manager) GetTrackByArtistAndTitle(artist, title string, withCoverFile b
 	err = db.
 		Where("artist = @artist AND title COLLATE UTF8_GENERAL_CI LIKE @title",
 			sql.Named("artist", artist),
-			sql.Named("title", title+"%")).
+			sql.Named("title", strings.ReplaceAll(title, " ", "%")+"%")).
 		Find(result).Error
 	return
 }
