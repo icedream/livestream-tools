@@ -11,7 +11,7 @@ RUN install -v -m0755 metacollectord /target/usr/local/bin/metacollectord
 
 ###
 
-FROM alpine:3.16
+FROM alpine:3.17
 
 RUN apk add sqlite-libs
 

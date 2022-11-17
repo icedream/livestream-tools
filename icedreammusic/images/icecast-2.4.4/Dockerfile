@@ -1,4 +1,4 @@
-FROM alpine:3.16 AS share
+FROM alpine:3.17 AS share
 
 RUN apk add --no-cache git
 WORKDIR /icecast/share/
@@ -9,7 +9,7 @@ RUN chmod -R a-rwx,a+rX .
 
 ###
 
-FROM alpine:3.16 AS icecast-download
+FROM alpine:3.17 AS icecast-download
 
 RUN apk add --no-cache curl ca-certificates
 WORKDIR /usr/src/
@@ -18,7 +18,7 @@ RUN curl -L http://downloads.xiph.org/releases/icecast/icecast-${ICECAST_VERSION
 
 ###
 
-FROM alpine:3.16 AS icecast
+FROM alpine:3.17 AS icecast
 
 RUN apk add --no-cache \
 	build-base file openssl-dev libxslt-dev \
@@ -34,7 +34,7 @@ RUN make install
 
 ###
 
-FROM alpine:3.16
+FROM alpine:3.17
 
 # add runtime deps
 RUN \

@@ -9,7 +9,7 @@ RUN install -v -m0755 tunaposter/tunaposter /target/usr/local/bin/tunaposter
 
 ###
 
-FROM alpine:3.16
+FROM alpine:3.17
 
 COPY --from=0 /target/ /
 
