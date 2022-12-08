@@ -9,8 +9,8 @@ replace (
 
 require (
 	github.com/icedream/go-stagelinq v0.0.1
-	github.com/icedream/livestream-tools/icedreammusic/metacollector v0.0.0-00010101000000-000000000000
+	github.com/icedream/livestream-tools/icedreammusic/metacollector v0.0.0-20221205042012-d83cb4af0567
 	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-00010101000000-000000000000
 )
 
-require golang.org/x/text v0.3.7 // indirect
+require golang.org/x/text v0.4.0 // indirect
