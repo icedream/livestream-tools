@@ -11,7 +11,7 @@ require (
 	github.com/billziss-gh/cgofuse v1.5.0
 	github.com/dhowden/tag v0.0.0-20220618230019-adf36e896086
 	github.com/gin-gonic/gin v1.9.0
-	github.com/icedream/livestream-tools/icedreammusic/metacollector v0.0.0-20230225182505-3d92c799cf4d
+	github.com/icedream/livestream-tools/icedreammusic/metacollector v0.0.0-20230226023202-27c886c2d45a
 	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20230225182505-3d92c799cf4d
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20191105091915-95d230a53780
 )
