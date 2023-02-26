@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
-	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20230225123053-eb57fa528a3b
+	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20230225182505-3d92c799cf4d
 )
 
 require (
