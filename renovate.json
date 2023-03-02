@@ -4,6 +4,12 @@
   ],
   "packageRules": [
     {
+      "matchPackagePatterns": [
+        "github.com/icedream/livestream-tools/icedreammusic/*"
+      ],
+      "automerge": false
+    },
+    {
       "matchUpdateTypes": [
         "minor",
         "patch",
