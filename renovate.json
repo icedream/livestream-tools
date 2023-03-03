@@ -4,21 +4,6 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": [
-        "github.com/icedream/livestream-tools/icedreammusic/*"
-      ],
-      "automerge": false
-    },
-    {
-      "matchUpdateTypes": [
-        "minor",
-        "patch",
-        "pin",
-        "digest"
-      ],
-      "automerge": true
-    },
-    {
       "matchPackageNames": [
         "savonet/liquidsoap-ci-build"
       ],
