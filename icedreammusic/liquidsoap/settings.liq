@@ -1,8 +1,8 @@
-stream_name=getenv(default="Spontaneously live in the mix", "STREAM_NAME")
-stream_description=getenv(default="", "STREAM_DESCRIPTION")
+stream_name=environment.get(default="Spontaneously live in the mix", "STREAM_NAME")
+stream_description=environment.get(default="", "STREAM_DESCRIPTION")
 
-internal_icecast_username=getenv(default="source", "INTERNAL_ICECAST_USERNAME")
-internal_icecast_password=getenv(default="source", "INTERNAL_ICECAST_PASSWORD")
+internal_icecast_username=environment.get(default="source", "INTERNAL_ICECAST_USERNAME")
+internal_icecast_password=environment.get(default="source", "INTERNAL_ICECAST_PASSWORD")
 
-rektfm_username=getenv("REKTNETWORK_USERNAME")
-rektfm_password=getenv("REKTNETWORK_PASSWORD")
+rektfm_username=environment.get("REKTNETWORK_USERNAME")
+rektfm_password=environment.get("REKTNETWORK_PASSWORD")
