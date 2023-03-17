@@ -26,7 +26,7 @@ then
     rm winfsp.zip
 fi
 
-for bin in foobar2000 tunadish tunaposter prime4
+for bin in auto-restart-voicemeeter foobar2000 tunadish tunaposter prime4
 do
     cd "$SCRIPT_DIR/$bin"
     go build -ldflags "-s -w" -o "$GOBIN/$bin$ext" -v
