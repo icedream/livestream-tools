@@ -16,7 +16,10 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
     s = insert_metadata(s)
 
     # Handler for fetching metadata
-    def on_http_get_metadata(~protocol, ~data, ~headers, uri) =
+    def on_http_get_metadata(request) =
+        http_version = request.http_version
+        headers = request.headers
+
         m = s.last_metadata() ?? []
 
         # remove cover info and link to it instead if existing
@@ -35,7 +38,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
         m = metadata.cover.remove(m)
         data = http_export_meta(compact=true, m)
 
-        http.response(protocol=protocol, code=200, headers=[
+        http.response(http_version=http_version, status_code=200, headers=[
             ("access-control-allow-origin","*"),
             ("access-control-allow-credentials","true"),
             ("access-control-allow-methods","GET,POST"),
@@ -47,11 +50,14 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
     end
 
     # Handler for fetching current cover art
-    def on_http_get_cover(~protocol, ~data, ~headers, uri) =
+    def on_http_get_cover(request) =
+        http_version = request.http_version
+        headers = request.headers
+
         m = s.last_metadata() ?? []
         cover = metadata.cover(m) ?? "".{mime="text/plain"}
         if string.length(cover) > 0 then
-            http.response(protocol=protocol, code=200, headers=[
+            http.response(http_version=http_version, status_code=200, headers=[
                 ("access-control-allow-origin","*"),
                 ("access-control-allow-credentials","true"),
                 ("access-control-allow-methods","GET,POST"),
@@ -61,7 +67,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
                 ("content-type", cover.mime),
             ], data=string_of(cover))
         else
-            http.response(protocol=protocol, code=404, headers=[
+            http.response(http_version=http_version, status_code=404, headers=[
                 ("access-control-allow-origin","*"),
                 ("access-control-allow-credentials","true"),
                 ("access-control-allow-methods","GET,POST"),
@@ -73,7 +79,11 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
     end
 
     # Handler for receiving metadata
-    def on_http_metadata(~protocol, ~data, ~headers, uri) =
+    def on_http_metadata(request) =
+        http_version = request.http_version
+        data = request.data()
+        headers = request.headers
+
         let json.parse (data : {
             data: [(string * string)] as json.object
         }) = data
@@ -108,7 +118,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
         # set metadata on stream
         s.insert_metadata(new_track=new_track, m)
 
-        http.response(protocol=protocol, code=200, headers=[
+        http.response(http_version=http_version, status_code=200, headers=[
             ("allow","POST"),
             ("access-control-allow-origin","*"),
             ("access-control-allow-credentials","true"),
@@ -119,8 +129,11 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
     end
 
     # Just in case we use a browser to send data to this (for example while emulating Tuna)
-    def on_http_metadata_cors(~protocol, ~data, ~headers, uri) =
-        http.response(protocol=protocol, code=200, headers=[
+    def on_http_metadata_cors(request) =
+        http_version = request.http_version
+        headers = request.headers
+
+        http.response(http_version=http_version, status_code=200, headers=[
             ("allow","POST"),
             ("access-control-allow-origin","*"),
             ("access-control-allow-credentials","true"),
@@ -130,17 +143,17 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, s) =
         ], data="POST")
     end
 
-    harbor.http.register(port=metadata_api_port, method="GET", "/#{id}/meta", on_http_get_metadata)
-    harbor.http.register(port=metadata_api_port, method="OPTIONS", "/#{id}/meta", on_http_metadata_cors)
+    harbor.http.register.simple(port=metadata_api_port, method="GET", "/#{id}/meta", on_http_get_metadata)
+    harbor.http.register.simple(port=metadata_api_port, method="OPTIONS", "/#{id}/meta", on_http_metadata_cors)
 
-    harbor.http.register(port=metadata_api_port, method="GET", "/#{id}/cover", on_http_get_cover)
-    harbor.http.register(port=metadata_api_port, method="OPTIONS", "/#{id}/cover", on_http_metadata_cors)
+    harbor.http.register.simple(port=metadata_api_port, method="GET", "/#{id}/cover", on_http_get_cover)
+    harbor.http.register.simple(port=metadata_api_port, method="OPTIONS", "/#{id}/cover", on_http_metadata_cors)
 
-    harbor.http.register(port=metadata_api_port, method="POST", "/#{id}", on_http_metadata)
-    harbor.http.register(port=metadata_api_port, method="OPTIONS", "/#{id}", on_http_metadata_cors)
+    harbor.http.register.simple(port=metadata_api_port, method="POST", "/#{id}", on_http_metadata)
+    harbor.http.register.simple(port=metadata_api_port, method="OPTIONS", "/#{id}", on_http_metadata_cors)
 
-    harbor.http.register(port=metadata_api_port, method="POST", "/", on_http_metadata)
-    harbor.http.register(port=metadata_api_port, method="OPTIONS", "/", on_http_metadata_cors)
+    harbor.http.register.simple(port=metadata_api_port, method="POST", "/", on_http_metadata)
+    harbor.http.register.simple(port=metadata_api_port, method="OPTIONS", "/", on_http_metadata_cors)
 
     s
 end

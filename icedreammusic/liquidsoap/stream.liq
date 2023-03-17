@@ -22,18 +22,32 @@ set("sandbox", "disabled")
 s = input.http(id="input_ice_main", max_buffer=4., "http://127.0.0.1:61120/main")
 
 # Split audio off to be handled specially
-a = drop_video(s)
+# NOTE - drop_video causes a weird error during script validation, we assume audio-only here
+# a = drop_video(s)
+a = s
 a = mksafe_soft(a)
 output.dummy(a)
 
-def append_encoder_meta(m) =
-    [
+def append_encoder_meta(_) =
+    new_meta = [
         ("encoder", "Liquidsoap #{liquidsoap.version}"),
-        ("stream_name", stream_name),
-        ("stream_description", stream_description),
     ]
+
+    new_meta = if null.defined(stream_name) then
+        [...new_meta, ("stream_name", null.get(stream_name))]
+    else
+        new_meta
+    end
+
+    new_meta = if null.defined(stream_description) then
+        [...new_meta, ("stream_description", null.get(stream_description))]
+    else
+        new_meta
+    end
+
+    new_meta
 end
-a = map_metadata(id="main", append_encoder_meta, a)
+a = metadata.map(id="main", append_encoder_meta, a)
 
 a = setup_harbor_metadata_api(a)
 
@@ -55,10 +69,10 @@ def internal_icecast(
         headers=[],
         port=61120,
         host="127.0.0.1",
-        user=internal_icecast_username,
-        password=internal_icecast_password,
-        name=stream_name,
-        description=stream_description,
+        user=null.get(internal_icecast_username),
+        password=null.get(internal_icecast_password),
+        name=null.get(stream_name),
+        description=null.get(stream_description),
         e, s)
 end
 
@@ -123,7 +137,7 @@ setup_harbor_stream_api(internal_icecast(
 ))
 
 # REKT.fm
-if string.length(rektfm_username) > 0 and string.length(rektfm_password) > 0 then
+if null.defined(rektfm_username) and null.defined(rektfm_password) then
     setup_harbor_stream_api(output.icecast(
         id="out_a_rekt",
         # %ogg(%flac),
@@ -133,10 +147,10 @@ if string.length(rektfm_username) > 0 and string.length(rektfm_password) > 0 the
         port=60000,
         host="stream.rekt.network",
         # host="stream.rekt.fm",
-        user=rektfm_username,
-        name=stream_name,
-        description=stream_description,
-        password=rektfm_password,
+        user=null.get(rektfm_username),
+        name=null.get(stream_name),
+        description=null.get(stream_description),
+        password=null.get(rektfm_password),
         start=false,
         %ffmpeg(
             format="ogg",
