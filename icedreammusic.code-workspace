@@ -26,6 +26,12 @@
 		},
 		{
 			"path": "icedreammusic/tunaposter"
+		},
+		{
+			"path": "icedreammusic/auto-restart-voicemeeter"
+		},
+		{
+			"path": "."
 		}
 	]
 }
