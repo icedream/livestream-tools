@@ -1,18 +1,18 @@
-set("log.stdout", true)
-set("log.file", false)
+settings.log.stdout := true
+settings.log.file := false
 
-set("log.level", 4)
+settings.log.level := 4
 
-set("server.telnet", true)
-set("server.telnet.bind_addr", "127.0.0.1")
-set("server.telnet.port", 21337)
+settings.server.telnet := true
+settings.server.telnet.bind_addr := "127.0.0.1"
+settings.server.telnet.port := 21337
 
-set("init.allow_root",true)
-set("frame.video.width", 1920)
-set("frame.video.height", 1080)
-set("audio.converter.samplerate.libsamplerate.quality", "best")
-set("audio.converter.samplerate.native.quality","linear")
-set("sandbox", "disabled")
+settings.init.allow_root := true
+settings.frame.video.width := 1920
+settings.frame.video.height := 1080
+settings.audio.converter.samplerate.libsamplerate.quality := "best"
+settings.audio.converter.samplerate.native.quality := "linear"
+settings.sandbox := "disabled"
 
 %include "settings.liq"
 %include "metadata_api.liq"
