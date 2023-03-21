@@ -12,7 +12,7 @@ settings.frame.video.width := 1920
 settings.frame.video.height := 1080
 settings.audio.converter.samplerate.libsamplerate.quality := "best"
 settings.audio.converter.samplerate.native.quality := "linear"
-settings.sandbox := "disabled"
+settings.sandbox := false
 
 %include "settings.liq"
 %include "metadata_api.liq"
