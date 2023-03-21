@@ -268,9 +268,9 @@ COPY --from=ffmpeg-ndi /usr/src/ffmpeg-ndi/*.pkg.* /packages/
 COPY --from=fakesilence /usr/local/bin/fakesilence /target/usr/local/bin/
 
 ###
-# PACKAGE INSTALL
+# FINAL IMAGE
 
-FROM base AS install
+FROM base AS final-image
 
 USER root
 # COPY --from=powerpill /usr/src/powerpill/*.pkg.* /tmp/
@@ -295,16 +295,6 @@ RUN \
 COPY --from=fakesilence /usr/local/bin/fakesilence /usr/local/bin/
 
 COPY --from=files /target/ /
-
-RUN rm -rf /var/cache/pacman/pkg/*
-
-###
-# FINAL IMAGE
-
-FROM base AS final-image
-
-# squash all the package installation into a single
-COPY --from=install / /
 
 RUN useradd -m -u 1000 -G wheel,realtime,audio,video ndi-feeder
 RUN echo "ndi-feeder:ndi-feeder" | chpasswd
