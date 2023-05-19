@@ -49,7 +49,7 @@ def append_encoder_meta(_) =
 end
 a = metadata.map(id="main", append_encoder_meta, a)
 
-a = setup_harbor_metadata_api(a)
+a = setup_harbor_metadata_api(id="main", a)
 
 # Output to internal Icecast server.
 # @argsof output.icecast[!fallible,!port,!host,!user,!password,!name,!description]
