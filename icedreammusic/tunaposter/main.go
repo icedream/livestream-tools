@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"image"
+	"image/jpeg"
 	"io"
 	"log"
 	"net"
@@ -16,7 +17,6 @@ import (
 	"strings"
 	"time"
 
-	"image/jpeg"
 	_ "image/jpeg"
 	_ "image/png"
 
@@ -42,6 +42,8 @@ type liquidsoapMetadata struct {
 	Title                string `json:"title"`
 	Publisher            string `json:"publisher,omitempty"`
 	Year                 string `json:"year,omitempty"`
+	Duration             uint64 `json:"duration,omitempty"`
+	Progress             uint64 `json:"progress,omitempty"`
 }
 
 func (lm *liquidsoapMetadata) SetCover(r io.Reader, compressToJPEG bool) (err error) {
@@ -147,9 +149,12 @@ func main() {
 			tunaData := new(tuna.TunaData)
 			if err = json.NewDecoder(resp.Body).Decode(tunaData); err == nil {
 				// skip empty or same metadata
-				differentDataReceived := oldTunaData == nil ||
+				differentSongReceived := oldTunaData == nil ||
 					oldTunaData.Title != tunaData.Title ||
 					len(oldTunaData.Artists) != len(tunaData.Artists)
+				differentDataReceived := differentSongReceived ||
+					oldTunaData.Progress != tunaData.Progress ||
+					oldTunaData.Duration != tunaData.Duration
 				if !differentDataReceived {
 					for i, artist := range oldTunaData.Artists {
 						differentDataReceived = differentDataReceived || artist != tunaData.Artists[i]
@@ -161,6 +166,8 @@ func main() {
 						CoverURL:  tunaData.CoverURL,
 						Publisher: tunaData.Label,
 						Title:     tunaData.Title,
+						Duration:  tunaData.Duration,
+						Progress:  tunaData.Progress,
 					}
 
 					if tunaData.Year > 0 {
@@ -168,28 +175,30 @@ func main() {
 					}
 
 					// transfer cover to liquidsoap metadata
-					if coverURL, err := url.Parse(tunaData.CoverURL); err == nil {
-						if strings.EqualFold(coverURL.Scheme, "http") ||
-							strings.EqualFold(coverURL.Scheme, "https") {
-							log.Println("Downloading cover:", tunaData.CoverURL)
-							resp, err := http.Get(tunaData.CoverURL)
-							if err == nil {
-								err = liquidsoapMetadata.SetCover(resp.Body, true)
-								resp.Body.Close()
-								if err != nil {
-									log.Println("WARNING: Failed to transfer cover to liquidsoap metadata, skipping:", err.Error())
+					if differentSongReceived {
+						if coverURL, err := url.Parse(tunaData.CoverURL); err == nil {
+							if strings.EqualFold(coverURL.Scheme, "http") ||
+								strings.EqualFold(coverURL.Scheme, "https") {
+								log.Println("Downloading cover:", tunaData.CoverURL)
+								resp, err := http.Get(tunaData.CoverURL)
+								if err == nil {
+									err = liquidsoapMetadata.SetCover(resp.Body, true)
+									resp.Body.Close()
+									if err != nil {
+										log.Println("WARNING: Failed to transfer cover to liquidsoap metadata, skipping:", err.Error())
+									}
 								}
-							}
 
-							// remove reference to localhost/127.*.*.*
-							localhost := coverURL.Host == "localhost" || strings.HasSuffix(coverURL.Host, ".localhost")
-							if !localhost {
-								if ip := net.ParseIP(coverURL.Host); ip != nil {
-									localhost = ip[0] == 127
+								// remove reference to localhost/127.*.*.*
+								localhost := coverURL.Host == "localhost" || strings.HasSuffix(coverURL.Host, ".localhost")
+								if !localhost {
+									if ip := net.ParseIP(coverURL.Host); ip != nil {
+										localhost = ip[0] == 127
+									}
 								}
-							}
-							if localhost {
-								liquidsoapMetadata.CoverURL = ""
+								if localhost {
+									liquidsoapMetadata.CoverURL = ""
+								}
 							}
 						}
 					}
