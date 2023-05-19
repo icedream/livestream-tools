@@ -139,8 +139,6 @@ setup_harbor_stream_api(internal_icecast(
 if null.defined(rektfm_username) and null.defined(rektfm_password) then
     setup_harbor_stream_api(output.icecast(
         id="out_a_rekt",
-        # %ogg(%flac),
-        # %mp3(bitrate=320),
         fallible=true,
         mount="rekt",
         port=60000,
@@ -151,16 +149,8 @@ if null.defined(rektfm_username) and null.defined(rektfm_password) then
         description=null.get(stream_description),
         password=null.get(rektfm_password),
         start=false,
-        %ffmpeg(
-            format="ogg",
-            %audio(
-                codec="libvorbis",
-                flags=2, # CODEC_FLAG_QSCALE (enables VBR mode based on qscale aka global_quality)
-                global_quality=1180., # gets divided by FF_QP2LAMBDA=118
-            ),
-        ),
+        format="audio/flac",
+        %flac,
         a,
-        # %ffmpeg(format="ogg", %audio.copy),
-        # a_vorbis,
     ))
 end
