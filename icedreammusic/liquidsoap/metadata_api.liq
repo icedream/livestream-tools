@@ -204,5 +204,12 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, ~id="", s) =
     harbor.http.register.simple(port=metadata_api_port, method="POST", "/", on_http_metadata)
     harbor.http.register.simple(port=metadata_api_port, method="OPTIONS", "/", on_http_metadata_cors)
 
-    s
+    # TODO - we remove cover art for now as it disturbs REKT, this needs fixing
+    # m = metadata.cover.remove(m)
+    def strip_cover_metadata(m) =
+        metadata.cover.remove(m)
+    end
+    metadata.map(insert_missing=false, strip=true, strip_cover_metadata, s)
+
+    #s
 end
