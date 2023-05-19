@@ -6,3 +6,7 @@ internal_icecast_password=environment.get(default="source", "INTERNAL_ICECAST_PA
 
 rektfm_username=environment.get("REKTNETWORK_USERNAME")
 rektfm_password=environment.get("REKTNETWORK_PASSWORD")
+
+streaminginternet_username=environment.get("STREAMINGINTERNET_USERNAME")
+streaminginternet_password=environment.get("STREAMINGINTERNET_PASSWORD")
+streaminginternet_channel=environment.get("STREAMINGINTERNET_CHANNEL")

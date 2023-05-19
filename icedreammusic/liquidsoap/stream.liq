@@ -154,3 +154,22 @@ if null.defined(rektfm_username) and null.defined(rektfm_password) then
         a,
     ))
 end
+
+# streaminginternet
+if null.defined(streaminginternet_username) and null.defined(streaminginternet_password) and null.defined(streaminginternet_channel) then
+    setup_harbor_stream_api(output.icecast(
+        id="out_a_streaminginternet",
+        fallible=true,
+        mount="#{null.get(streaminginternet_channel)}/master_signal",
+        port=61120,
+        host="publish.streaminginter.net",
+        user=null.get(streaminginternet_username),
+        name=null.get(stream_name),
+        description=null.get(stream_description),
+        password=null.get(streaminginternet_password),
+        start=true,
+        format="audio/flac",
+        %flac,
+        a,
+    ))
+end
