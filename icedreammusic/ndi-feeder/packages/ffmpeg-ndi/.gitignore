@@ -1,0 +1,8 @@
+ffmpeg/
+master_Revert-lavd-Remove-libndi_newtek.patch
+libndi_newtek_common.h
+libndi_newtek_dec.c
+libndi_newtek_enc.c
+*.exe
+*.dll
+*.tar*

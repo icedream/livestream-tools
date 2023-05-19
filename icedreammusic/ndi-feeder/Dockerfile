@@ -220,7 +220,8 @@ RUN \
 	yay --noconfirm -U /tmp/*.pkg.* && rm /tmp/*.pkg.*
 
 USER build
-RUN git clone --recursive https://aur.archlinux.org/ffmpeg-ndi.git .
+# ffmpeg-ndi AUR package is no longer maintained, use our own modified copy
+COPY ./packages/ffmpeg-ndi/ .
 RUN \
 	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 	--mount=type=cache,target=/tmp/build/.cache \
