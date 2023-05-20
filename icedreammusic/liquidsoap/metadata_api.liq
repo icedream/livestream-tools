@@ -156,7 +156,7 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, ~id="", s) =
             # set metadata on stream
             m = list.assoc.filter(fun (_, v) -> null.defined(v), m)
             m = list.map(fun (v) -> (fst(v), null.get(snd(v))), m)
-            log.info("New metadata for #{id}: #{json.stringify(m)}")
+            log.info("New metadata for #{id}: new_track=#{json.stringify(new_track)} m=#{json.stringify(m)}")
             s.insert_metadata(new_track=new_track, m)
         else
             log.info("No new metadata for #{id}")
@@ -204,12 +204,5 @@ def setup_harbor_metadata_api(~metadata_api_port=21338, ~id="", s) =
     harbor.http.register.simple(port=metadata_api_port, method="POST", "/", on_http_metadata)
     harbor.http.register.simple(port=metadata_api_port, method="OPTIONS", "/", on_http_metadata_cors)
 
-    # TODO - we remove cover art for now as it disturbs REKT, this needs fixing
-    # m = metadata.cover.remove(m)
-    def strip_cover_metadata(m) =
-        metadata.cover.remove(m)
-    end
-    metadata.map(insert_missing=false, strip=true, strip_cover_metadata, s)
-
-    #s
+    s
 end
