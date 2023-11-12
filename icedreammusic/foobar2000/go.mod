@@ -9,7 +9,7 @@ replace (
 
 require (
 	github.com/billziss-gh/cgofuse v1.5.0
-	github.com/dhowden/tag v0.0.0-20220618230019-adf36e896086
+	github.com/dhowden/tag 978a0926ee25
 	github.com/gin-gonic/gin v1.9.0
 	github.com/icedream/livestream-tools/icedreammusic/metacollector v0.0.0-20230302143311-ad3e9704c029
 	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20230302143311-ad3e9704c029
