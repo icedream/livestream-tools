@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/dhowden/tag v0.0.0-20230630033851-978a0926ee25
-	github.com/fsnotify/fsnotify v1.6.0
+	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/spf13/viper v1.17.0
 	gorm.io/driver/mysql v1.5.2
