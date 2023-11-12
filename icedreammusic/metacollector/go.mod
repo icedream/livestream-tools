@@ -7,9 +7,9 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/spf13/viper v1.17.0
-	gorm.io/driver/mysql v1.4.7
+	gorm.io/driver/mysql v1.5.2
 	gorm.io/driver/sqlite v1.4.4
-	gorm.io/gorm v1.24.6
+	gorm.io/gorm v1.25.2-0.20230530020048-26663ab9bf55
 )
 
 require (
