@@ -130,9 +130,17 @@ prepare() {
 build() {
   cd ffmpeg
 
+  # NOTE - --disable-doc due to breakage with texinfo>=7.1.
+  #
+  # If a working patch is needed for this version of ffmpeg, debian provides
+  # one in their package sources:
+  #
+  # https://sources.debian.org/patches/ffmpeg/7:6.0-9/0005-Patch-up-t2h-for-texinfo-7.1.patch/
+
   ./configure \
     --prefix=/usr \
     --disable-debug \
+    --disable-doc \
     --disable-static \
     --disable-stripping \
     --enable-amf \
