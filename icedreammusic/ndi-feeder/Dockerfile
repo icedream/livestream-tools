@@ -110,12 +110,14 @@ RUN cp -v "$GOPATH"/bin/* /usr/local/bin
 
 FROM base-devel AS yay
 
+# NOTE - for why we do `ulimit -n 1024` see https://github.com/moby/moby/issues/27195#issuecomment-1410745778 
+
 WORKDIR /usr/src/yay
 RUN git clone --recursive https://aur.archlinux.org/yay.git .
 RUN \
 	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 	--mount=type=cache,target=/tmp/build/.cache \
-	makepkg -sr --noconfirm --nocheck
+	ulimit -n 1024 && makepkg -sr --noconfirm --nocheck
 
 ###
 # BASE DEVEL (YAY)
@@ -144,7 +146,7 @@ RUN \
 	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 	--mount=type=cache,target=/tmp/build/.cache \
 	(. ./PKGBUILD && yay -S --noconfirm --asdeps --provides --needed $(yay -T "${depends[@]}") && (mv -v ~/.cache/yay/*/*.pkg.* . || true))
-RUN makepkg -sr --noconfirm
+RUN ulimit -n 1024 && makepkg -sr --noconfirm
 
 ###
 # NDI-SDK-EMBEDDED
@@ -159,7 +161,7 @@ RUN \
 	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 	--mount=type=cache,target=/tmp/build/.cache \
 	(. ./PKGBUILD && yay -S --noconfirm --asdeps --provides --needed $(yay -T "${depends[@]}") && (mv -v ~/.cache/yay/*/*.pkg.* . || true))
-RUN makepkg -sr --noconfirm
+RUN ulimit -n 1024 && makepkg -sr --noconfirm
 
 ###
 # NDI-SDK
@@ -180,7 +182,7 @@ RUN \
 RUN \
 	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 	--mount=type=cache,target=/tmp/build/.cache \
-	makepkg -sr --noconfirm
+	ulimit -n 1024 && makepkg -sr --noconfirm
 
 ###
 # NDI-ADVANCED-SDK
@@ -201,7 +203,7 @@ RUN \
 RUN \
 	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 	--mount=type=cache,target=/tmp/build/.cache \
-	makepkg -sr --noconfirm
+	ulimit -n 1024 && makepkg -sr --noconfirm
 
 ###
 # FFMPEG-NDI
@@ -247,7 +249,7 @@ RUN \
 RUN \
 	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 	--mount=type=cache,target=/tmp/build/.cache \
-	makepkg -sr --noconfirm --nocheck
+	ulimit -n 1024 && makepkg -sr --noconfirm --nocheck
 
 ###
 # PERMISSIONS FOR FINAL IMAGE FILES
