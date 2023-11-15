@@ -1,4 +1,4 @@
-ARG IMAGE=savonet/liquidsoap-ci-build:rolling-release-v2.2.x@sha256:4cee43e436f6dff60e77273a5608686991f0703d2763fae1c6131e7fdb0886ad
+ARG IMAGE=savonet/liquidsoap-ci-build:v2.2.2_amd64
 
 FROM $IMAGE
 
