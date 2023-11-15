@@ -95,12 +95,7 @@ setup_harbor_stream_api(internal_icecast(
     id="out_a_int_flac",
     mount="/outa/flac",
     start=true,
-    %ffmpeg(
-        format="ogg",
-        %audio(
-            codec="flac",
-        ),
-    ),
+    %ogg(%flac),
     a,
 ))
 setup_harbor_stream_api(internal_icecast(
@@ -198,8 +193,7 @@ if null.defined(streaminginternet_username) and null.defined(streaminginternet_p
         description=null.get(stream_description),
         password=null.get(streaminginternet_password),
         start=true,
-        format="audio/flac",
-        %flac,
+        %ogg(%flac),
         a,
     ))
 end
