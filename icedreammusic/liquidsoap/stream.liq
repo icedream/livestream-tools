@@ -120,6 +120,21 @@ setup_harbor_stream_api(internal_icecast(
     a,
 ))
 setup_harbor_stream_api(internal_icecast(
+    id="out_a_int_mp3_640",
+    mount="/outa/mp3_640",
+    start=false,
+    format="audio/mpeg",
+    encoding="ISO-8859-1",
+    %external(
+        channels=2,
+        samplerate=44100,
+        header=true,
+        restart_on_crash=true,
+        restart_after_delay=0,
+        process="lame --silent --noreplaygain --flush -t --freeformat -b640 - -"),
+    a,
+))
+setup_harbor_stream_api(internal_icecast(
     id="out_a_int_mp3_128",
     mount="/outa/mp3_128",
     start=false,
@@ -149,8 +164,23 @@ if null.defined(rektfm_username) and null.defined(rektfm_password) then
         description=null.get(stream_description),
         password=null.get(rektfm_password),
         start=false,
-        format="audio/flac",
-        %flac,
+        # NOTE - can't use OGG/FLAC here as OGG metadata changes cause dropouts
+        #format="application/ogg",
+        #%ogg(%flac),
+        # NOTE - liquidsoap can't be trusted to detect bare FLAC either unfortunately
+        #send_icy_metadata=true,
+        #format="audio/x-flac",
+        #%flac,
+        # NOTE - let's just use good old mp3 until Z updates the liquidsoap version...
+        send_icy_metadata=true,
+        format="audio/mpeg",
+        %external(
+            channels=2,
+            samplerate=44100,
+            header=true,
+            restart_on_crash=true,
+            restart_after_delay=0,
+            process="lame --silent --noreplaygain --flush -t --freeformat -b640 - -"),
         a,
     ))
 end
