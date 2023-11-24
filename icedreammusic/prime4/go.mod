@@ -13,4 +13,4 @@ require (
 	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20221205042012-d83cb4af0567
 )
 
-require golang.org/x/text v0.7.0 // indirect
+require golang.org/x/text v0.13.0 // indirect
