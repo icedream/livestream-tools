@@ -187,8 +187,10 @@ func main() {
 			go func() {
 				// enrich metadata with metacollector
 				req := metacollector.MetaCollectorRequest{
-					Artist: tunaMetadata.Artists[0],
-					Title:  tunaMetadata.Title,
+					Title: tunaMetadata.Title,
+				}
+				if len(tunaMetadata.Artists) > 0 {
+					req.Artist = tunaMetadata.Artists[0]
 				}
 				log.Printf("Trying to enrich metadata: %+v", req)
 				resp, err := metacollectorClient.GetTrack(req)
