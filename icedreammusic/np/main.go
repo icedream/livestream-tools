@@ -39,6 +39,7 @@ func init() {
 func watchMetadata(ctx context.Context) <-chan *libnp.Info {
 	ticker := time.NewTicker(time.Second)
 	c := make(chan *libnp.Info)
+	var lastMetadataID [64]byte
 	go func(ticker *time.Ticker) {
 		for {
 			select {
@@ -48,6 +49,14 @@ func watchMetadata(ctx context.Context) <-chan *libnp.Info {
 				info, err := libnp.GetInfo(context.Background())
 				if err != nil {
 					os.Stderr.WriteString("WARNING: " + err.Error() + "\n")
+					continue
+				}
+				var newMetadataID [64]byte
+				if info != nil {
+					newMetadataID = generateIDFromMetadata(*info)
+				}
+				if newMetadataID == lastMetadataID {
+					// metadata did not change
 					continue
 				}
 				c <- info
