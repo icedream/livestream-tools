@@ -285,6 +285,10 @@ func main() {
 			return
 		}
 		file, err := m.GetFile(uint(fileID))
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
@@ -310,6 +314,10 @@ func main() {
 			return
 		}
 		track, err := m.GetTrackByArtistAndTitle(form.Artist, form.Title, false)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
