@@ -1,0 +1,12 @@
+diff -p1 -U1 -r a/roapi.h b/roapi.h
+--- a/roapi.h	2024-01-22 02:10:15.948390337 +0100
++++ b/roapi.h	2024-01-22 02:10:39.815131639 +0100
+@@ -32,2 +32,4 @@ extern "C" {
+ 
++#pragma region Desktop Family
++
+ // Ro initialization flags; passed to Windows::Runtime::Initialize
+@@ -35,3 +37,2 @@ typedef enum RO_INIT_TYPE
+ {
+-#pragma region Desktop Family
+ #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
