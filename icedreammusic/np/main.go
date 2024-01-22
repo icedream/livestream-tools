@@ -81,10 +81,7 @@ func SetPriorityWindows(pid int, priority uint32) error {
 	}
 	defer windows.CloseHandle(handle) // Technically this can fail, but we ignore it if it does
 
-	err = windows.SetPriorityClass(handle, priority)
-	if err != nil {
-		return err
-	}
+	return windows.SetPriorityClass(handle, priority)
 }
 
 func main() {
