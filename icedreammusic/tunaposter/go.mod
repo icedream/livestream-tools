@@ -3,7 +3,7 @@ module github.com/icedream/livestream-tools/icedreammusic/tunaposter
 go 1.19
 
 require (
-	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20221205042012-d83cb4af0567
+	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20240122014424-f96ec7e413e0
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20191105091915-95d230a53780
 )
 

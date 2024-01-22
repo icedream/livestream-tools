@@ -12,7 +12,7 @@ require (
 	github.com/dhowden/tag v0.0.0-20230630033851-978a0926ee25
 	github.com/gin-gonic/gin v1.9.1
 	github.com/icedream/livestream-tools/icedreammusic/metacollector v0.0.0-20230302143311-ad3e9704c029
-	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20230302143311-ad3e9704c029
+	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20240122014424-f96ec7e413e0
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20191105091915-95d230a53780
 )
 
