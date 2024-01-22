@@ -6,7 +6,7 @@ require (
 	github.com/dhowden/tag v0.0.0-20230630033851-978a0926ee25
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/spf13/viper v1.18.1
+	github.com/spf13/viper v1.18.2
 	gorm.io/driver/mysql v1.5.2
 	gorm.io/driver/sqlite v1.5.4
 	gorm.io/gorm v1.25.5
