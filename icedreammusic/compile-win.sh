@@ -41,11 +41,14 @@ fi
 mkdir -p "$thirdparty_includes"
 if [ ! -d "$thirdparty_includes/libnp" ]; then
     wget -q -O libnp.zip https://github.com/delthas/libnp/archive/291aeb5d56d5b90f89ef8a271d0803a698488ca6.zip
+    wget -q -O libnp.1.patch https://github.com/delthas/libnp/pull/1.patch
+    srcdir="$(pwd)"
     7z x libnp.zip 'libnp-291aeb5d56d5b90f89ef8a271d0803a698488ca6/*' -o"$thirdparty_includes"/
     rm libnp.zip
     mv "$thirdparty_includes/libnp-291aeb5d56d5b90f89ef8a271d0803a698488ca6" "$thirdparty_includes/libnp"
     (
         cd "$thirdparty_includes/libnp/"
+        patch -p1 -N -i "$srcdir/libnp.1.patch"
         mkdir -p build
         cd build
         cmake \
