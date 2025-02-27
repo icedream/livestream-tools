@@ -11,6 +11,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/delthas/go-libnp v0.0.0-20221222161248-0e45ece1f878 h1:v8W8eW7eb2bHFXBA80UKcoe0TvEu46NlTHSDRvgAbMU=
 github.com/delthas/go-libnp v0.0.0-20221222161248-0e45ece1f878/go.mod h1:aGVXnhWpDlt5U4SphG97o1gszctZKvBTXy320E8Buw4=
+github.com/delthas/go-libnp v0.0.0-20250105150050-96674b98150e h1:pIf/gLtiegAZXvmwYZ9Jco0hMk5gqVIBetSilLfj/yk=
+github.com/delthas/go-libnp v0.0.0-20250105150050-96674b98150e/go.mod h1:aGVXnhWpDlt5U4SphG97o1gszctZKvBTXy320E8Buw4=
 github.com/dhowden/tag v0.0.0-20230630033851-978a0926ee25 h1:simG0vMYFvNriGhaaat7QVVkaVkXzvqcohaBoLZl9Hg=
 github.com/dhowden/tag v0.0.0-20230630033851-978a0926ee25/go.mod h1:Z3Lomva4pyMWYezjMAU5QWRh0p1VvO4199OHlFnyKkM=
 github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8 h1:OtSeLS5y0Uy01jaKK4mA/WVIYtpzVm63vLVAPzJXigg=
