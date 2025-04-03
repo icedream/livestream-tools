@@ -1,4 +1,4 @@
-ARG IMAGE=savonet/liquidsoap-ci-build:v2.2.2_amd64
+ARG IMAGE=savonet/liquidsoap-ci-build:v2.3.2_amd64
 
 FROM $IMAGE
 
