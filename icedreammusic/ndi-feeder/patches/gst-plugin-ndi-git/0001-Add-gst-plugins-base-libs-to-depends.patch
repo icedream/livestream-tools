@@ -1,0 +1,38 @@
+From 4906403902c507ed70389f88ce4371b7055ac0b9 Mon Sep 17 00:00:00 2001
+From: Carl Kittelberger <icedream@icedream.pw>
+Date: Sun, 20 Apr 2025 00:15:30 +0200
+Subject: [PATCH] Add gst-plugins-base-libs to depends
+
+---
+ .SRCINFO | 1 +
+ PKGBUILD | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/.SRCINFO b/.SRCINFO
+index 0aa79d5..b0ba5d4 100644
+--- a/.SRCINFO
++++ b/.SRCINFO
+@@ -10,6 +10,7 @@ pkgbase = gst-plugin-ndi-git
+ 	makedepends = git
+ 	makedepends = rust
+ 	depends = gstreamer
++	depends = gst-plugins-base-libs
+ 	depends = libndi
+ 	provides = gst-plugin-ndi
+ 	conflicts = gst-plugin-ndi
+diff --git a/PKGBUILD b/PKGBUILD
+index 3a0bfce..d2dee08 100644
+--- a/PKGBUILD
++++ b/PKGBUILD
+@@ -7,7 +7,7 @@ pkgdesc="GStreamer plugin for NDI"
+ arch=("x86_64")
+ url="https://github.com/teltek/gst-plugin-ndi"
+ license=('LGPL')
+-depends=('gstreamer' 'libndi')
++depends=('gstreamer' 'gst-plugins-base-libs' 'libndi')
+ provides=("${pkgname%-git}")
+ conflicts=("${pkgname%-git}")
+ makedepends=('git' 'rust')
+-- 
+2.49.0
+

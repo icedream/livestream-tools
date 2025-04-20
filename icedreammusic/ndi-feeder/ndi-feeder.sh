@@ -1,57 +1,58 @@
 #!/bin/bash -e
 
-target_url="${1:-icecast://source:source@127.0.0.1:61120/main}"
-ffmpeg_pids=()
+#target_url="${1:-icecast://source:source@127.0.0.1:61120/main}"
+: "${TARGET_IP:=127.0.0.1}"
+: "${TARGET_PORT:=61120}"
+: "${TARGET_MOUNT:=/main}"
+: "${TARGET_USERNAME:=source}"
+: "${TARGET_PASSWORD:=source}"
+: "${NDI_FEEDER_EXTRA_IP:=}"
 
-call_ffmpeg() {
-    command ffmpeg -hide_banner "$@"
+gstreamer_pids=()
+
+call_gstreamer() {
+    command gst-launch-1.0 "$@"
 }
 
-daemon_ffmpeg() {
-    call_ffmpeg "$@" &
-    ffmpeg_pids+=($!)
+daemon_gstreamer() {
+    call_gstreamer "$@" &
+    gstreamer_pids+=($!)
 }
 
-shutdown_ffmpeg() {
-    if is_ffmpeg_running; then
-        kill "$ffmpeg_pid" || true
+shutdown_gstreamer() {
+    if is_gstreamer_running; then
+        kill "$gstreamer_pid" || true
         for t in $(seq 0 10); do
-            if ! kill -0 "$ffmpeg_pid"; then
+            if ! kill -0 "$gstreamer_pid"; then
                 break
             fi
             sleep 1
         done
-        if kill -0 "$ffmpeg_pid"; then
-            kill -9 "$ffmpeg_pid" || true
+        if kill -0 "$gstreamer_pid"; then
+            kill -9 "$gstreamer_pid" || true
         fi
     fi
-    ffmpeg_pid=
+    gstreamer_pid=
 }
 
-is_ffmpeg_running() {
-    [ -n "$ffmpeg_pid" ] && kill -0 "$ffmpeg_pid"
+is_gstreamer_running() {
+    [ -n "$gstreamer_pid" ] && kill -0 "$gstreamer_pid"
 }
 
 on_exit() {
-    shutdown_ffmpeg
+    shutdown_gstreamer
 }
 trap on_exit EXIT
 
 offline=0
 
-while true; do
-    found_audio_source=""
+url_address=()
+if [ -n "$NDI_FEEDER_EXTRA_IP" ]; then
+    url_address=("url-address=$NDI_FEEDER_EXTRA_IP:5961")
+fi
 
-    while read -r line; do
-        declare -a "found_source=($(sed -e 's/"/\\"/g' -e "s/'/\"/g" -e 's/[][`~!@#$%^&*():;<>.,?/\|{}=+-]/\\&/g' <<<"$line"))"
-        found_source[0]=$(sed -e 's/\\\([`~!@#$%^&*():;<>.,?/\|{}=+-]\)/\1/g' <<<"${found_source[0]}")
-        found_source[1]=$(sed -e 's/\\\([`~!@#$%^&*():;<>.,?/\|{}=+-]\)/\1/g' <<<"${found_source[1]}")
-        case "${found_source[0]}" in
-        *\(ID*\ Main\ Audio\))
-            found_audio_source="${found_source[0]}"
-            ;;
-        esac
-    done < <(call_ffmpeg -loglevel info -extra_ips 192.168.188.21,192.168.188.76 -find_sources true -f libndi_newtek -i "dummy" 2>&1 | grep -Po "'(.+)'\s+'(.+)" | tee)
+while true; do
+    found_audio_source="$(grep --line-buffered -m 1 --color=none -Po 'ndi-name = \K.+\(ID.* Main Audio.*\)$'  < <(gst-device-monitor-1.0 -f Source/Network:application/x-ndi))"
 
     if [ -z "$found_audio_source" ]; then
         offline=$((offline + 1))
@@ -59,21 +60,16 @@ while true; do
         offline=0
     fi
 
-    if ! is_ffmpeg_running && [ -n "$found_audio_source" ]; then
-        echo "starting ffmpeg with audio source: $found_audio_source" >&2
+    if ! is_gstreamer_running && [ -n "$found_audio_source" ]; then
+        echo "starting gstreamer with audio source: $found_audio_source" >&2
 
-        call_ffmpeg -loglevel warning \
-            -analyzeduration 1 -f libndi_newtek -extra_ips 192.168.188.21 -i "$found_audio_source" \
-            -map a -c:a pcm_s16le -ar 48000 -ac 2 -f s16le - |
+        call_gstreamer ndisrc ndi-name="$found_audio_source" "${url_address[@]}" ! ndisrcdemux name=demux \
+            demux.audio ! queue ! audioconvert ! audio/x-raw, channels=2, rate=48000, format=S16LE ! filesink location=/dev/stdout |
             fakesilence --samplerate 48000 --channels 2 --silence-threshold 125ms |
-            daemon_ffmpeg -loglevel warning \
-                -ar 48000 -channels 2 -f s16le -i - \
-                -map a -c:a flac -f ogg -content_type application/ogg "${target_url}"
-
-        # HACK - can't use the standard mpegts here, but liquidsoap will happily accept anything ffmpeg can parse (by default)… so let's just use nut here even though it feels super duper wrong
-    elif is_ffmpeg_running && [ -z "$found_audio_source" ] && [ "$offline" -gt 0 ]; then
-        echo "shutting down ffmpeg since no source has been found" >&2
-        shutdown_ffmpeg # it won't shut down by itself unfortunately
+            daemon_gstreamer filesrc location=/dev/stdin ! rawaudioparse use-sink-caps=false format=pcm pcm-format=s16le sample-rate=48000 num-channels=2 ! queue ! audioconvert ! audioresample ! flacenc ! oggmux ! shout2send mount="$TARGET_MOUNT" port="$TARGET_PORT" username="$TARGET_USERNAME" password="$TARGET_PASSWORD" ip="$TARGET_IP"
+    elif is_gstreamer_running && [ -z "$found_audio_source" ] && [ "$offline" -gt 0 ]; then
+        echo "shutting down gstreamer since no source has been found" >&2
+        shutdown_gstreamer # it won't shut down by itself unfortunately
     fi
 
     sleep 1

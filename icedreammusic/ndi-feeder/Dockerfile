@@ -206,6 +206,52 @@ RUN \
 	ulimit -n 1024 && makepkg -sr --noconfirm
 
 ###
+# GST-PLUGIN-NDI-GIT
+
+FROM base-devel-yay AS gst-plugin-ndi-git
+
+WORKDIR /usr/src/gst-plugin-ndi-git
+
+USER root
+# COPY --from=ndi-sdk-embedded /usr/src/ndi-sdk-embedded/*.pkg.* /tmp/
+COPY --from=ndi-sdk /usr/src/ndi-sdk/*.pkg.* /tmp/
+RUN \
+	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
+	--mount=type=cache,target=/tmp/build/.cache \
+	yay --noconfirm -U /tmp/*.pkg.* && rm /tmp/*.pkg.*
+
+USER build
+RUN git clone https://aur.archlinux.org/gst-plugin-ndi-git.git .
+COPY patches/gst-plugin-ndi-git/*.patch /var/tmp
+RUN set -e && for patch in /var/tmp/*.patch; do patch -Np1 -i "$patch"; done
+RUN \
+	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
+	--mount=type=cache,target=/tmp/build/.cache \
+	(\
+	. ./PKGBUILD &&\
+	if [ "${#depends[@]}" -eq 0 ]; then exit; fi &&\
+	packages=$(yay -T "${depends[@]}" 2>/dev/null|| true) &&\
+	if [ -z "$packages" ]; then exit; fi &&\
+	yay -S --noconfirm --asdeps --provides --needed $packages &&\
+	find ~/.cache/yay/ -mindepth 2 -maxdepth 2 -name \*.pkg.\* -exec mv {} . \;\
+	)
+# RUN (. ./PKGBUILD && yay -S --noconfirm --asdeps --provides --needed $(yay -T "${optdepends[@]}") && (mv -v ~/.cache/yay/*/*.pkg.* . || true))
+RUN \
+	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
+	--mount=type=cache,target=/tmp/build/.cache \
+	(\
+	. ./PKGBUILD &&\
+	if [ "${#makedepends[@]}" -eq 0 ]; then exit; fi &&\
+	packages=$(yay -T "${makedepends[@]}" 2>/dev/null|| true) &&\
+	if [ -z "$packages" ]; then exit; fi &&\
+	yay -S --noconfirm --asdeps --provides --needed $packages \
+	)
+RUN \
+	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
+	--mount=type=cache,target=/tmp/build/.cache \
+	ulimit -n 1024 && makepkg -sr --noconfirm --nocheck
+
+###
 # FFMPEG-NDI
 
 FROM base-devel-yay AS ffmpeg-ndi
@@ -267,7 +313,7 @@ RUN chmod -v +x *.sh
 FROM scratch as packages
 
 COPY --from=ndi-sdk /usr/src/ndi-sdk/*.pkg.* /packages/
-COPY --from=ffmpeg-ndi /usr/src/ffmpeg-ndi/*.pkg.* /packages/
+COPY --from=gst-plugin-ndi-git /usr/src/gst-plugin-ndi-git/*.pkg.* /packages/
 COPY --from=fakesilence /usr/local/bin/fakesilence /target/usr/local/bin/
 
 ###
@@ -284,7 +330,7 @@ USER root
 
 #COPY --from=yay /usr/src/yay/*.pkg.* /tmp/
 COPY --from=ndi-sdk /usr/src/ndi-sdk/*.pkg.* /tmp/
-COPY --from=ffmpeg-ndi /usr/src/ffmpeg-ndi/*.pkg.* /tmp/
+COPY --from=gst-plugin-ndi-git /usr/src/gst-plugin-ndi-git/*.pkg.* /tmp/
 RUN \
 	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 	--mount=type=cache,target=/tmp/build/.cache \
@@ -293,7 +339,7 @@ RUN \
 RUN \
 	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 	--mount=type=cache,target=/tmp/build/.cache \
-	rm -f /var/cache/pacman/pkg/cache.lck; pacman -S --noconfirm --needed sudo realtime-privileges
+	rm -f /var/cache/pacman/pkg/cache.lck; pacman -S --noconfirm --needed sudo realtime-privileges gst-plugins-base gst-plugins-good
 
 COPY --from=fakesilence /usr/local/bin/fakesilence /usr/local/bin/
 
