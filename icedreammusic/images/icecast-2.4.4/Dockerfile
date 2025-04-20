@@ -1,4 +1,4 @@
-FROM alpine:3.19 AS share
+FROM alpine:3.21 AS share
 
 RUN apk add --no-cache git
 WORKDIR /icecast/share/
@@ -9,7 +9,7 @@ RUN chmod -R a-rwx,a+rX .
 
 ###
 
-FROM alpine:3.19 AS icecast-download
+FROM alpine:3.21 AS icecast-download
 
 RUN apk add --no-cache curl ca-certificates
 WORKDIR /usr/src/
@@ -18,7 +18,7 @@ RUN curl -L http://downloads.xiph.org/releases/icecast/icecast-${ICECAST_VERSION
 
 ###
 
-FROM alpine:3.19 AS icecast
+FROM alpine:3.21 AS icecast
 
 RUN apk add --no-cache \
 	build-base file openssl-dev libxslt-dev \
@@ -34,11 +34,11 @@ RUN make install
 
 ###
 
-FROM alpine:3.19
+FROM alpine:3.21
 
 # add runtime deps
 RUN \
-	apk add --no-cache file libssl1.1 libxslt libvorbis \
+	apk add --no-cache file libssl3 libxslt libvorbis \
 		opus libogg speex libtheora \
 		libtheora curl && \
 	rm -rf /tmp/* /var/cache/apk/*
