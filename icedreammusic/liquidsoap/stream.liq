@@ -58,12 +58,12 @@ a = setup_harbor_metadata_api(id="main", a)
 def internal_icecast(
     # NOTE - We have to have !headers here, otherwise liquidsoap will complain "this value has type _ * _ but it should be a supertype of the type of the value at…"
     %argsof(
-        output.icecast[!fallible,!headers,!port,!host,!user,!password,!name,!description]
+        output.icecast[!fallible,!headers,!port,!host,!user,!password,!name,!description,!icy_id,!protocol]
     ),
     e, s) =
     output.icecast(
         %argsof(
-            output.icecast[!fallible,!headers,!port,!host,!user,!password,!name,!description]
+            output.icecast[!fallible,!headers,!port,!host,!user,!password,!name,!description,!icy_id,!protocol]
         ),
         fallible=true,
         headers=[],
