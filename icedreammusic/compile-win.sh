@@ -27,7 +27,7 @@ export CGO_ENABLED=1
 
 if [ ! -d "$thirdparty_includes/windows/splat/sdk/Include/${winsdk_version}" ]; then
     if command -v xwin 2>/dev/null >/dev/null; then
-        xwin --cache-dir="$thirdparty_includes/windows/.xwin-cache" splat --preserve-ms-arch-notation --output="$thirdparty_includes/windows/splat"
+        xwin --sdk-version="$winsdk_version" --cache-dir="$thirdparty_includes/windows/.xwin-cache" splat --preserve-ms-arch-notation --output="$thirdparty_includes/windows/splat"
     else
         echo "ERROR: xwin not found and $thirdparty_includes/windows/splat does not exist. Please install the xwin tool from https://github.com/Jake-Shadle/xwin." >&2
         exit 1
