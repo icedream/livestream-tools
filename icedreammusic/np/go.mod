@@ -1,6 +1,8 @@
 module github.com/icedream/livestream-tools/icedreammusic/np
 
-go 1.19
+go 1.21.0
+
+toolchain go1.24.2
 
 replace (
 	github.com/icedream/livestream-tools/icedreammusic/metacollector => ../metacollector
@@ -13,7 +15,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/icedream/livestream-tools/icedreammusic/metacollector v0.0.0-20240122014424-f96ec7e413e0
 	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20230302143311-ad3e9704c029
-	golang.org/x/sys v0.15.0
+	golang.org/x/sys v0.29.0
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20191105091915-95d230a53780
 )
 
@@ -36,14 +38,14 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/nicksnyder/go-i18n v1.10.1 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
-	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	golang.org/x/crypto v0.32.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
+	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
