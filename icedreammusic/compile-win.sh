@@ -72,7 +72,7 @@ if [ ! -d "$thirdparty_includes/libnp" ]; then
         make
     )
     mkdir -p "$GOBIN"
-    cp "$thirdparty_includes/libnp/libnp/build"/*.dll "$GOBIN"
+    cp "$thirdparty_includes/libnp/build"/*.dll "$GOBIN"
 fi
 if [ ! -d "$thirdparty_includes/winfsp" ]; then
     wget -q -O winfsp.zip https://github.com/billziss-gh/winfsp/archive/release/1.2.zip
