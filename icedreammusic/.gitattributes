@@ -1,2 +1,2 @@
 # do not fix line endings on patch file as it will not apply correctly
-winrt.*.patch text eol=crlf
+*.*.patch -text
