@@ -192,7 +192,7 @@ if null.defined(streaminginternet_username) and null.defined(streaminginternet_p
         name=null.get(stream_name),
         description=null.get(stream_description),
         password=null.get(streaminginternet_password),
-        start=true,
+        start=false,
         %ogg(%flac),
         a,
     ))
