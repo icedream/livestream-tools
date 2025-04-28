@@ -5,9 +5,6 @@
 metadata_api_hostname = environment.get(default="icedream-bitwave", "METADATA_API_HOSTNAME")
 
 def setup_harbor_metadata_api(~metadata_api_port=21338, ~id="", s) =
-    # HACK - work around https://github.com/savonet/liquidsoap/issues/2996
-    id = if id != "" then id else s.id() end
-
     s = drop_metadata(s) # stream metadata wipes out own data
     s = insert_metadata(s)
 
