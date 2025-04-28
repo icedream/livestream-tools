@@ -30,15 +30,27 @@ def setup_harbor_stream_api(s) =
         ], data=json.stringify([]))
     end
 
+    def normalize_float(f) =
+        if float.is_infinite(f) or float.is_nan(f) then
+            0.
+        else
+            f
+        end
+    end
+
     def on_info(_) =
-        data = [
-            ("id", s.id()),
-            ("last_metadata", json.stringify(s.last_metadata())),
-            ("is_up", json.stringify(s.is_up())),
-            ("is_started", json.stringify(s.is_started())),
-            ("is_ready", json.stringify(s.is_ready())),
-            ("is_active", json.stringify(s.is_active())),
-        ]
+        data = {
+            duration = normalize_float(s.duration()),
+            elapsed = normalize_float(s.elapsed()),
+            id = s.id(),
+            is_active = s.is_active(),
+            is_ready = s.is_ready(),
+            is_started = s.is_started(),
+            is_up = s.is_up(),
+            last_metadata = s.last_metadata(),
+            remaining = normalize_float(s.remaining()),
+            time = normalize_float(s.time()),
+        }
         http.response(status_code=200, headers=[
             ("content-type","application/json"),
         ], data=json.stringify(data))
