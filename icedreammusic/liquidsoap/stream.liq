@@ -101,7 +101,7 @@ setup_harbor_stream_api(internal_icecast(
 setup_harbor_stream_api(internal_icecast(
     id="out_a_int_mp3_96",
     mount="/outa/mp3_96",
-    start=false,
+    start=true,
     format="audio/mpeg",
     encoding="ISO-8859-1",
     %ffmpeg(
