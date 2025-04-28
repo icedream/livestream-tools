@@ -4,6 +4,8 @@ github.com/hashicorp/errwrap v1.0.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brv
 github.com/hashicorp/go-multierror v1.1.0/go.mod h1:spPvp8C1qA32ftKqdAHm4hHTbPw+vmowP0z+KUhOZdA=
 github.com/icedream/go-stagelinq v0.0.1 h1:frdX2whnuoUSPwiWQ/keFm//TobSCH18fodEF48rxZ0=
 github.com/icedream/go-stagelinq v0.0.1/go.mod h1:jLI5jgxAgnuD/h7Pt3Ao8X+GpUVGR+Bt245/ae9kB8k=
+github.com/icedream/go-stagelinq v1.0.0 h1:C8T5FPrVVBWC0625rBKHhvhZdo+LW8oF6nBEFEMGEpk=
+github.com/icedream/go-stagelinq v1.0.0/go.mod h1:IZraCf8CvuPTS+JvnNs+P/FTqLPNHkVgRt4XisZP9xk=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
