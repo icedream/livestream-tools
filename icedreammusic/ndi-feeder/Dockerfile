@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.15.0
+# syntax=docker/dockerfile:1.15.1
 
 FROM alpine AS rootfs
 
