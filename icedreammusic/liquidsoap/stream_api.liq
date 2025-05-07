@@ -20,6 +20,11 @@ def setup_harbor_stream_api(s) =
         s.start()
         http.response(status_code=200, headers=[
             ("content-type","application/json"),
+            ("allow","POST"),
+            ("access-control-allow-origin","*"),
+            ("access-control-allow-credentials","true"),
+            ("access-control-allow-methods","POST"),
+            ("access-control-allow-headers","Origin,X-Requested-With,Content-Type,Accept,Authorization,access-control-allow-headers,access-control-allow-origin"),
         ], data=json.stringify([]))
     end
 
@@ -27,6 +32,11 @@ def setup_harbor_stream_api(s) =
         s.stop()
         http.response(status_code=200, headers=[
             ("content-type","application/json"),
+            ("allow","POST"),
+            ("access-control-allow-origin","*"),
+            ("access-control-allow-credentials","true"),
+            ("access-control-allow-methods","POST"),
+            ("access-control-allow-headers","Origin,X-Requested-With,Content-Type,Accept,Authorization,access-control-allow-headers,access-control-allow-origin"),
         ], data=json.stringify([]))
     end
 
@@ -53,10 +63,33 @@ def setup_harbor_stream_api(s) =
         }
         http.response(status_code=200, headers=[
             ("content-type","application/json"),
+            ("allow","GET"),
+            ("access-control-allow-origin","*"),
+            ("access-control-allow-credentials","true"),
+            ("access-control-allow-methods","GET"),
+            ("access-control-allow-headers","Origin,X-Requested-With,Content-Type,Accept,Authorization,access-control-allow-headers,access-control-allow-origin"),
         ], data=json.stringify(data))
     end
 
+    def on_http_metadata_cors(request) =
+        http_version = request.http_version
+        headers = request.headers
+
+        http.response(http_version=http_version, status_code=200, headers=[
+            ("allow","GET,POST"),
+            ("access-control-allow-origin","*"),
+            ("access-control-allow-credentials","true"),
+            ("access-control-allow-methods","GET,POST"),
+            ("access-control-allow-headers","Origin,X-Requested-With,Content-Type,Accept,Authorization,access-control-allow-headers,access-control-allow-origin"),
+            ("content-type","text/html; charset=utf-8"),
+        ], data="POST")
+    end
+
     stream_api_streams := [...stream_api_streams(), s.id()]
+
+    harbor.http.register.simple(port=stream_api_port, method="OPTIONS", "/streams/#{s.id()}", on_http_metadata_cors)
+    harbor.http.register.simple(port=stream_api_port, method="OPTIONS", "/streams/#{s.id()}/start", on_http_metadata_cors)
+    harbor.http.register.simple(port=stream_api_port, method="OPTIONS", "/streams/#{s.id()}/stop", on_http_metadata_cors)
 
     harbor.http.register.simple(port=stream_api_port, method="POST", "/streams/#{s.id()}/start", on_start)
     harbor.http.register.simple(port=stream_api_port, method="POST", "/streams/#{s.id()}/stop", on_stop)
