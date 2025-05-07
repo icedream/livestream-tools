@@ -7,6 +7,9 @@ settings.server.telnet := true
 settings.server.telnet.bind_addr := "127.0.0.1"
 settings.server.telnet.port := 21337
 
+settings.prometheus.server := true
+settings.prometheus.server.port := 21339
+
 settings.init.allow_root := true
 settings.frame.video.width := 1920
 settings.frame.video.height := 1080
