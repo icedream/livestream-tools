@@ -16,7 +16,7 @@ require (
 	github.com/icedream/livestream-tools/icedreammusic/metacollector v0.0.0-20240122014424-f96ec7e413e0
 	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20230302143311-ad3e9704c029
 	golang.org/x/sys v0.32.0
-	gopkg.in/alecthomas/kingpin.v3-unstable 5e8f9d9916db
+	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20191105091915-95d230a53780
 )
 
 require (
