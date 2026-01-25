@@ -64,7 +64,7 @@ services:
           memory: 128M
   icecast:
     image: icedream/icecast
-    build: images/icecast-2.4.4
+    build: images/icecast-2.5.0
     restart: always
     volumes:
       - "/share/VM_Disks/Docker/IcedreamLive/config/icecast/icecast.xml:/icecast.xml:ro"
