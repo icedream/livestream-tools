@@ -171,6 +171,14 @@ FROM base-devel-yay AS ndi-sdk
 WORKDIR /usr/src/ndi-sdk
 RUN git clone --recursive https://aur.archlinux.org/ndi-sdk.git .
 
+# patch SDK version & sum if not done yet upstream
+RUN if grep -q 6.2.1.r146761.20250821 PKGBUILD; then \
+		sed -i \
+			-e 's,0bdf66264527f8be37fa22eddd2b8514b9868a58a4d83f80a07dbeb479ee14d4,bae544649fbda6bab8e7695d34ed171611b11e610c919da8fff673a67071fda8,' \
+			-e 's,6.2.1.r146761.20250821,6.3.0.g9bf047063.20260120,' \
+			PKGBUILD; \
+	fi
+
 RUN \
 	--mount=type=cache,target=/var/cache/pacman/pkg,sharing=locked \
 	--mount=type=cache,target=/tmp/build/.cache \
