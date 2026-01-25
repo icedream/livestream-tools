@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20221205042012-d83cb4af0567
-	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20191105091915-95d230a53780
+	gopkg.in/alecthomas/kingpin.v3-unstable 5e8f9d9916db
 )
 
 require (
