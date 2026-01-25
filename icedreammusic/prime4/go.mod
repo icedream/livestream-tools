@@ -2,7 +2,7 @@ module github.com/icedream/livestream-tools/icedreammusic/prime4
 
 go 1.21.0
 
-toolchain go1.24.2
+toolchain go1.25.6
 
 replace (
 	github.com/icedream/livestream-tools/icedreammusic/metacollector => ../metacollector

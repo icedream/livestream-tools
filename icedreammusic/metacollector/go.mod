@@ -2,7 +2,7 @@ module github.com/icedream/livestream-tools/icedreammusic/metacollector
 
 go 1.21.0
 
-toolchain go1.24.2
+toolchain go1.25.6
 
 require (
 	github.com/dhowden/tag v0.0.0-20240417053706-3d75831295e8
