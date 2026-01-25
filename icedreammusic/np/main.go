@@ -18,7 +18,6 @@ import (
 	"github.com/delthas/go-libnp"
 	"github.com/dhowden/tag"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/sys/windows"
 	"gopkg.in/alecthomas/kingpin.v3-unstable"
 
 	"github.com/icedream/livestream-tools/icedreammusic/metacollector"
@@ -71,26 +70,13 @@ func generateIDFromMetadata(metadata libnp.Info) [64]byte {
 	return sha512.Sum512([]byte(strings.Join(metadata.Artists, "|") + "||" + metadata.Title))
 }
 
-// https://learn.microsoft.com/en-us/windows/win32/procthread/process-security-and-access-rights
-const PROCESS_ALL_ACCESS = windows.STANDARD_RIGHTS_REQUIRED | windows.SYNCHRONIZE | 0xffff
-
-func SetPriorityWindows(pid int, priority uint32) error {
-	handle, err := windows.OpenProcess(PROCESS_ALL_ACCESS, false, uint32(pid))
-	if err != nil {
-		return err
-	}
-	defer windows.CloseHandle(handle) // Technically this can fail, but we ignore it if it does
-
-	return windows.SetPriorityClass(handle, priority)
-}
-
 func main() {
 	ctx := context.Background()
 
 	// Set priority to idle to not use CPU that is required for audio playback
-	err := SetPriorityWindows(os.Getpid(), windows.IDLE_PRIORITY_CLASS)
+	err := setIdlePriority()
 	if err != nil {
-		log.Println("WARNING: Failed to set priority class: ", err)
+		log.Println("WARNING: Failed to set idle priority class: ", err)
 	}
 
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
