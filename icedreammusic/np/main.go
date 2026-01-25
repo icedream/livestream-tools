@@ -43,6 +43,7 @@ func watchMetadata(ctx context.Context) <-chan *libnp.Info {
 		for {
 			select {
 			case <-ctx.Done():
+				close(c)
 				return
 			case <-ticker.C:
 				info, err := libnp.GetInfo(context.Background())
@@ -115,7 +116,6 @@ func main() {
 		}
 		c.Header("Content-type", picture.MIMEType)
 		c.Writer.Write(picture.Data)
-		return
 	})
 
 	listener, err := net.Listen("tcp", ":0")
