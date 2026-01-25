@@ -75,8 +75,8 @@ if [ ! -d "$thirdparty_includes/libnp" ]; then
     cp "$thirdparty_includes/libnp/build"/*.dll "$GOBIN"
 fi
 if [ ! -d "$thirdparty_includes/winfsp" ]; then
-    wget -q -O winfsp.zip https://github.com/billziss-gh/winfsp/archive/release/1.2.zip
-    7z e winfsp.zip 'winfsp-release-1.2/inc/fuse/*' -o"$thirdparty_includes"/winfsp
+    wget -q -O winfsp.zip https://github.com/winfsp/winfsp/archive/refs/tags/v2.1.zip
+    7z e winfsp.zip 'winfsp-2.1/inc/fuse/*' -o"$thirdparty_includes"/winfsp
     rm winfsp.zip
 fi
 
