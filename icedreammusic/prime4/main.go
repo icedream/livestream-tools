@@ -119,18 +119,18 @@ func (mmt *MultiMetadataTracker) registerDevice(dev *stagelinq.Device) {
 				StateMapConn: rawConn,
 			}
 			for _, key := range []string{
-				stagelinq.EngineDeck1Play,
-				stagelinq.EngineDeck1TrackArtistName,
-				stagelinq.EngineDeck1TrackSongName,
-				stagelinq.EngineDeck2Play,
-				stagelinq.EngineDeck2TrackArtistName,
-				stagelinq.EngineDeck2TrackSongName,
-				stagelinq.EngineDeck3Play,
-				stagelinq.EngineDeck3TrackArtistName,
-				stagelinq.EngineDeck3TrackSongName,
-				stagelinq.EngineDeck4Play,
-				stagelinq.EngineDeck4TrackArtistName,
-				stagelinq.EngineDeck4TrackSongName,
+				stagelinq.EngineDeck1.Play(),
+				stagelinq.EngineDeck1.TrackArtistName(),
+				stagelinq.EngineDeck1.TrackSongName(),
+				stagelinq.EngineDeck2.Play(),
+				stagelinq.EngineDeck2.TrackArtistName(),
+				stagelinq.EngineDeck2.TrackSongName(),
+				stagelinq.EngineDeck3.Play(),
+				stagelinq.EngineDeck3.TrackArtistName(),
+				stagelinq.EngineDeck3.TrackSongName(),
+				stagelinq.EngineDeck4.Play(),
+				stagelinq.EngineDeck4.TrackArtistName(),
+				stagelinq.EngineDeck4.TrackSongName(),
 				stagelinq.MixerCH1faderPosition,
 				stagelinq.MixerCH2faderPosition,
 				stagelinq.MixerCH3faderPosition,
@@ -338,37 +338,37 @@ func main() {
 		case state := <-tracker.C():
 			log.Printf("%s %s %+v", state.Device.Name, state.State.Name, state.State.Value)
 			switch state.State.Name {
-			case stagelinq.EngineDeck1TrackArtistName:
+			case stagelinq.EngineDeck1.TrackArtistName():
 				getDeck(state.Device, 0).Artist = state.State.Value["string"].(string)
-			case stagelinq.EngineDeck1TrackSongName:
+			case stagelinq.EngineDeck1.TrackSongName():
 				getDeck(state.Device, 0).Title = state.State.Value["string"].(string)
 			case stagelinq.MixerCH1faderPosition:
 				getDeck(state.Device, 0).Fader = state.State.Value["value"].(float64)
-			case stagelinq.EngineDeck1Play:
+			case stagelinq.EngineDeck1.Play():
 				getDeck(state.Device, 0).Playing = state.State.Value["state"].(bool)
-			case stagelinq.EngineDeck2TrackArtistName:
+			case stagelinq.EngineDeck2.TrackArtistName():
 				getDeck(state.Device, 1).Artist = state.State.Value["string"].(string)
-			case stagelinq.EngineDeck2TrackSongName:
+			case stagelinq.EngineDeck2.TrackSongName():
 				getDeck(state.Device, 1).Title = state.State.Value["string"].(string)
 			case stagelinq.MixerCH2faderPosition:
 				getDeck(state.Device, 1).Fader = state.State.Value["value"].(float64)
-			case stagelinq.EngineDeck2Play:
+			case stagelinq.EngineDeck2.Play():
 				getDeck(state.Device, 1).Playing = state.State.Value["state"].(bool)
-			case stagelinq.EngineDeck3TrackArtistName:
+			case stagelinq.EngineDeck3.TrackArtistName():
 				getDeck(state.Device, 2).Artist = state.State.Value["string"].(string)
-			case stagelinq.EngineDeck3TrackSongName:
+			case stagelinq.EngineDeck3.TrackSongName():
 				getDeck(state.Device, 2).Title = state.State.Value["string"].(string)
 			case stagelinq.MixerCH3faderPosition:
 				getDeck(state.Device, 2).Fader = state.State.Value["value"].(float64)
-			case stagelinq.EngineDeck3Play:
+			case stagelinq.EngineDeck3.Play():
 				getDeck(state.Device, 2).Playing = state.State.Value["state"].(bool)
-			case stagelinq.EngineDeck4TrackArtistName:
+			case stagelinq.EngineDeck4.TrackArtistName():
 				getDeck(state.Device, 3).Artist = state.State.Value["string"].(string)
-			case stagelinq.EngineDeck4TrackSongName:
+			case stagelinq.EngineDeck4.TrackSongName():
 				getDeck(state.Device, 3).Title = state.State.Value["string"].(string)
 			case stagelinq.MixerCH4faderPosition:
 				getDeck(state.Device, 3).Fader = state.State.Value["value"].(float64)
-			case stagelinq.EngineDeck4Play:
+			case stagelinq.EngineDeck4.Play():
 				getDeck(state.Device, 3).Playing = state.State.Value["state"].(bool)
 			}
 		}
