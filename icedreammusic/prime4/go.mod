@@ -1,6 +1,6 @@
 module github.com/icedream/livestream-tools/icedreammusic/prime4
 
-go 1.21.0
+go 1.23.0
 
 toolchain go1.25.6
 
@@ -15,4 +15,4 @@ require (
 	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20221205042012-d83cb4af0567
 )
 
-require golang.org/x/text v0.21.0 // indirect
+require golang.org/x/text v0.28.0 // indirect
