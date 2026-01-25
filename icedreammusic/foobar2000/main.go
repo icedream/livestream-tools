@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/billziss-gh/cgofuse/fuse"
 	"github.com/dhowden/tag"
 	"github.com/gin-gonic/gin"
+	"github.com/winfsp/cgofuse/fuse"
 	"gopkg.in/alecthomas/kingpin.v3-unstable"
 
 	"github.com/icedream/livestream-tools/icedreammusic/metacollector"

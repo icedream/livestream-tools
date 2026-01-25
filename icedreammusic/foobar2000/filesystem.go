@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"path/filepath"
 
-	fuse "github.com/billziss-gh/cgofuse/fuse"
+	fuse "github.com/winfsp/cgofuse/fuse"
 )
 
 type NowPlayingMetadata struct {
@@ -36,7 +36,7 @@ func NewNowPlayingFilesystem() (c <-chan NowPlayingMetadata, i fuse.FileSystemIn
 		Memfs:     NewMemfs(),
 		metadataC: ch,
 	}
-	npfs.Memfs.Mkdir("nowplaying", 0777)
+	npfs.Memfs.Mkdir("nowplaying", 0o777)
 	// err, fh := npfs.Open("/nowplaying.json", 0)
 	// if err != 0 {
 	// 	panic(fmt.Errorf("Failed to create nowplaying.json in memory, error code %d", err))
