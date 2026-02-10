@@ -2,7 +2,7 @@ module git.icedream.tech/icedream/auto-restart-voicemeeter
 
 go 1.23
 
-toolchain go1.25.6
+toolchain go1.26.0
 
 require github.com/JamesDunne/go-asio v0.0.0-20150322061733-6c4b099ca927
 

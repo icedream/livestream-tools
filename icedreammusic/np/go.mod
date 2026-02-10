@@ -2,7 +2,7 @@ module github.com/icedream/livestream-tools/icedreammusic/np
 
 go 1.24.0
 
-toolchain go1.25.6
+toolchain go1.26.0
 
 replace (
 	github.com/icedream/livestream-tools/icedreammusic/metacollector => ../metacollector
