@@ -12,7 +12,7 @@ replace (
 require (
 	github.com/icedream/go-stagelinq v1.0.0
 	github.com/icedream/livestream-tools/icedreammusic/metacollector v0.0.0-20240122014424-f96ec7e413e0
-	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20221205042012-d83cb4af0567
+	github.com/icedream/livestream-tools/icedreammusic/tuna v0.0.0-20260215193208-9364d6f7cd75
 )
 
 require golang.org/x/text v0.28.0 // indirect
