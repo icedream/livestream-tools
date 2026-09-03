@@ -22,7 +22,7 @@ FROM alpine:3.23 AS libigloo-download
 
 RUN apk add --no-cache curl ca-certificates
 WORKDIR /usr/src/
-ARG LIBIGLOO_VERSION=0.9.4
+ARG LIBIGLOO_VERSION=0.9.5
 RUN curl -L http://downloads.xiph.org/releases/igloo/libigloo-${LIBIGLOO_VERSION}.tar.gz | tar xz -v
 
 ###
@@ -34,7 +34,7 @@ RUN apk add --no-cache \
 	libvorbis-dev opus-dev libogg-dev speex-dev \
 	libtheora-dev curl-dev rhash-dev
 
-ARG LIBIGLOO_VERSION=0.9.4
+ARG LIBIGLOO_VERSION=0.9.5
 WORKDIR /usr/src/libigloo-${LIBIGLOO_VERSION}
 COPY --from=libigloo-download /usr/src/libigloo-${LIBIGLOO_VERSION}/ .
 RUN ./configure
